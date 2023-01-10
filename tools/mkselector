@@ -2,7 +2,7 @@
 function print_help() {
     echo "usage: ./tools/mkselector INPUTFILE [OPTIONAL ARGS]"
     echo ""
-    echo "Create a ROOT::MakeSelector class and install it in RAPIDO"
+    echo "Create a ROOT::MakeSelector class with its Selector.cc and Selector.h in the current directory"
     echo ""
     echo "required arguments:"
     echo "  INPUTFILE                    path to input ROOT file"
@@ -41,6 +41,8 @@ if [[ $inputfile == "" ]]; then
     exit 1
 fi
 
+# Documentation for TTree::MakeSelector: 
+# https://root.cern.ch/doc/master/classTTree.html#a7deef08c72d95a06f9ad7d9b1c844230
 cat > tempmacro.C << EOL
 void tempmacro(TString input_file, TString ttree_name, TString class_name) 
 { 
@@ -65,8 +67,8 @@ fi
 echo "Writing ROOT class dictionary..."
 rootcint ${rdictname}.cc -c ${classname}.h
 
-mv ${classname}* src/
-mv ${rdictname}* src/
-echo "New ROOT::MakeSelector class successfully installed in RAPIDO:"
-ls src/${classname}*
-ls src/${rdictname}*
+# mv ${classname}* ./
+# mv ${rdictname}* ./
+echo "New ROOT::MakeSelector class successfully created:"
+ls ./${classname}*
+ls ./${rdictname}*
