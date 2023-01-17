@@ -19,8 +19,8 @@ echo 'Setup following ROOT'
 which root
 
 export PATH=$DIR:$PATH
-export LD_LIBRARY_PATH=$PWD/tools:$PWD/tools/NanoCORE:$LD_LIBRARY_PATH
-export ROOT_INCLUDE_PATH=$ROOT_INCLUDE_PATH:$PWD/tools
+export LD_LIBRARY_PATH=$HOME/Utils/NanoTools:$HOME/Utils/rooutil:$PWD/tools:$LD_LIBRARY_PATH
+export ROOT_INCLUDE_PATH=$ROOT_INCLUDE_PATH:$PWD/tools:$HOME/Utils
 
 PATH=$(printf %s "$PATH" \
      | awk -vRS=: -vORS= '!a[$0]++ {if (NR>1) printf(":"); printf("%s", $0) }' )
