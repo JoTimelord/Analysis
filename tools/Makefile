@@ -9,7 +9,7 @@ $(LIB): $(OBJECTS)
 	ln -sf $(LIB) lib$(LIB)
 
 %.o:	%.cc
-	$(CXX) $(CXXFLAGS) -I${CMSSW_BASE}/../../../external/boost/1.67.0/include -I${CMSSW_BASE}/src -c $< -o $@ -fno-var-tracking
+	$(CXX) $(CXXFLAGS) -I$${HOME}/Utils/NanoTools/NanoCORE -I$${HOME}/Utils/rooutil/ -I${CMSSW_BASE}/../../../external/boost/1.67.0/include -I${CMSSW_BASE}/src -c $< -o $@ -fno-var-tracking
 
 all: $(LIB) 
 clean:

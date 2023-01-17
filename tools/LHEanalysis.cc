@@ -3,7 +3,7 @@
 
 void LHEAnalysis::Observable::selectObservable() {
     // How many particles are in each event
-    Int_t particleNo=nt.LHEPart_status().size();
+    unsigned int particleNo=nt.LHEPart_status().size();
     std::vector<LV> jets;
     Int_t VBFindx1, VBFindx2;
     Float_t eta1=-1000;
@@ -47,11 +47,11 @@ LHEAnalysis::Histogram::Histogram () {
     MVVH_=new TH1F("MVVH", "Invariant mass of the VVH system", 1080, 0, 3500);
     LT_=new TH1F("LT", "Transverse Momentum of the Z boson", 1080, 0, 1500);
     ST_=new TH1F("ST", "Transverse Momentum of the VVH", 1080, 0, 4500);
-    MJJ_=new TH1F("MJJ", "Invariant Mass of the VBF quarks system", 1080, 3500);
+    MJJ_=new TH1F("MJJ", "Invariant Mass of the VBF quarks system", 1080, 0, 3500);
     DETAJJ_=new TH1F("DETAJJ", "Delta Eta of the two VBF quarks", 1080, 0, 10);
 }
 
-void LHEAnalysis::Histogram::fillHistogram(LHEAnalysis::Observable& obs, Int_t wgt=1) {
+void LHEAnalysis::Histogram::fillHistogram(LHEAnalysis::Observable& obs, Int_t wgt) {
     MVVH_->Fill((obs.W_+obs.Z_+obs.H_).M(), wgt);
     LT_->Fill(obs.Z_.Pt(), wgt);
     ST_->Fill((obs.W_+obs.Z_+obs.H_).Pt(), wgt);

@@ -1,5 +1,6 @@
 #include "Nano.h"
 #include "looper.h"
+#include "calc.h"
 
 namespace LHEAnalysis{
     // Define a class called Observable that extract LHE variables.
@@ -13,7 +14,7 @@ namespace LHEAnalysis{
         // Used for each individual event to select the LHE level observables we care about.
         void selectObservable();
         // Destructor
-        ~Observable();
+        // ~Observable();
         // Allow Histogram to have access to LHE observables; 
         friend class Histogram;
     };

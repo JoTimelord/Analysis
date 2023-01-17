@@ -13,7 +13,7 @@ void readinput(int inputno, char** arguments, std::string& input_path, std::stri
         ("h,help"        , "Print help")
         ;
 
-    auto result = options.parse(argc, argv);
+    auto result = options.parse(inputno, arguments);
 
     //_______________________________________________________________________________
     // --help
@@ -69,11 +69,11 @@ int main(int argc, char** argv) {
     LHEAnalysis::Histogram H;
     // Create TChain for events looping
     TString input_tree="Events";
-    TChain* events_chain=RooUtil::FileUtil::createTChain(input_tree, input_path)
+    TChain* events_chain=RooUtil::FileUtil::createTChain(input_tree, input_path);
     // Create a looper
     RooUtil::Looper<Nano> looper;
     // Initialize the looper
-    looper.init(events_tchain, &nt, n_events);
+    looper.init(events_chain, &nt, nevents);
     // Loop through events
     while (looper.nextEvent()) {
         LHEAnalysis::Observable obs;

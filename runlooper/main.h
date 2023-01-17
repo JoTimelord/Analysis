@@ -14,3 +14,5 @@
 
 void readinput(int inputno, char** arguments, std::string& input_path, std::string& output_path, int& n_events);
 int main(int argc, char** argv);
+
+#endif

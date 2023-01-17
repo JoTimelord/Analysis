@@ -18,9 +18,9 @@ LDFLAGS     = -g -O2 -L$${HOME}/Utils/rooutil -L$${HOME}/Utils/NanoTools/NanoCOR
 ROOTLIBS    = $(shell root-config --libs)
 ROOTCFLAGS  = $(shell root-config --cflags)
 CXXFLAGS   += $(ROOTCFLAGS)
-CFLAGS      = $(ROOTCFLAGS) -Wall -Wno-unused-function -g -O2 -fPIC -fno-var-tracking -I$${HOME}/Utils/NanoTools/NanoCORE -I$${HOME}/Utils/rooutil/ -DLorentzVectorPtEtaPhiM4D
+CFLAGS      = $(ROOTCFLAGS) -Wall -Wno-unused-function -g -O2 -fPIC -fno-var-tracking -I$${HOME}/Utils/NanoTools/NanoCORE -I$${HOME}/Utils/rooutil/ -I$(MAINDIR)/tools -DLorentzVectorPtEtaPhiM4D
 EXTRACFLAGS = $(shell rooutil-config)
-EXTRAFLAGS  = -fPIC -ITMultiDrawTreePlayer -Wunused-variable -lTMVA -lEG -lGenVector -lXMLIO -lMLP -lTreePlayer -lNANO_CORE -lrooutil
+EXTRAFLAGS  = -fPIC -ITMultiDrawTreePlayer -Wunused-variable -lTMVA -lEG -lGenVector -lXMLIO -lMLP -lTreePlayer -lNANO_CORE -lrooutil -lANALYSIS_TOOL
 
 $(EXE): $(OBJECTS)
 	$(LD) $(CXXFLAGS) $(LDFLAGS) $(OBJECTS) $(ROOTLIBS) $(EXTRAFLAGS) -o $@
