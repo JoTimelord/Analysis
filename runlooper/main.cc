@@ -1,86 +1,105 @@
 #include "main.h"
 
-// Read in possible arguments and set input and output files
-void readinput(int inputno, char** arguments, std::string& input_path, std::string& output_path, int& n_events) {
-    // Grand option setting
-    cxxopts::Options options("\n  $ parseLHEs",  "\n         **********************\n         *                    *\n         *       Looper       *\n         *                    *\n         **********************\n");
-
-    // Read the options
-    options.add_options()
-        ("i,input", "Comma separated input file list OR if just a directory is provided it will glob all in the directory BUT must end with '/' for the path", cxxopts::value<std::string>())
-        ("o,output", "Output file name", cxxopts::value<std::string>())
-        ("n,nevents", "N events to loop over", cxxopts::value<int>()->default_value("-1"))
-        ("h,help"        , "Print help")
-        ;
-
-    auto result = options.parse(inputno, arguments);
-
-    //_______________________________________________________________________________
-    // --help
-    if (result.count("help"))
-    {
-        std::cout << options.help() << std::endl;
-        exit(1);
-    } 
-
-    //_______________________________________________________________________________
-    // --input 
-    if (result.count("input"))
-    {
-	input_path = result["input"].as<std::string>();
-    }
-    else 
-    {
-	std::cout << options.help() << std::endl;
-	std::cout << "No input provided" << std::endl;
-        exit(1);
-    } 
-    //_______________________________________________________________________________
-    // --nevents
-    n_events = result["nevents"].as<int>();
-    
-    //_______________________________________________________________________________
-    // --output
-    if (result.count("output"))
-    {
-	output_path = result["output"].as<std::string>();
-    }
-    else 
-    {
-	std::cout << options.help() << std::endl;
-	std::cout << "No output provided" << std::endl;
-        exit(1);
-    } 
+void initializeArbol(Arbol& arbol_) {
+    arbol_.newBranch<int>("event", -999);
+    arbol_.newBranch<double>("xsec_sf", -999);
+    arbol_.newBranch<double>("mvvh", -999);
+    arbol_.newBranch<double>("lt", -999);
+    arbol_.newBranch<double>("st", -999);
+    arbol_.newBranch<double>("mjj", -999);
+    arbol_.newBranch<double>("detajj", -999);
+}
+void initializeCutflow(Cutflow& cutflow_) {
+    cutflow_.globals.newVar<LorentzVector>("ld_lep_p4"); 
+    cutflow_.globals.newVar<LorentzVector>("sd_lep_p4"); 
+    cutflow_.globals.newVar<LorentzVector>("fatjet_p4");
+    cutflow_.globals.newVar<LorentzVector>("ld_jet_p4");
+    cutflow_.globals.newVar<LorentzVector>("sd_jet_p4");
+    cutflow_.globals.newVar<LorentzVector>("ld_vbf_p4");
+    cutflow_.globals.newVar<LorentzVector>("sd_vbf_p4");
 }
 
-int main(int argc, char** argv) {
-    // Files to loop through
-    std::string input_path;
-    std::string output_path;
-    int nevents; 
-    
-    // Configuration for nt and NanoCORE
-    nt.SetYear(2018);
-    gconf.GetConfigs(nt.year());
-    readinput(argc, argv, input_path, output_path, nevents);
-    // Create output root file
-    TFile* ofile=new TFile(output_path.c_str(),"recreate");
-    // Create LHE level Histograms Class
-    LHEAnalysis::Histogram H;
-    // Create TChain for events looping
-    TString input_tree="Events";
-    TChain* events_chain=RooUtil::FileUtil::createTChain(input_tree, input_path);
-    // Create a looper
-    RooUtil::Looper<Nano> looper;
-    // Initialize the looper
-    looper.init(events_chain, &nt, nevents);
-    // Loop through events
-    while (looper.nextEvent()) {
-        LHEAnalysis::Observable obs;
-        obs.selectObservable();
-        H.fillHistogram(obs);
+int main(int argc, char** argv)
+{
+    // CLI
+    HEPCLI cli = HEPCLI(argc, argv);
+
+    // Initialize Looper
+    Looper looper = Looper(cli);
+
+    // Initialize Arbol 
+    Arbol arbol = Arbol(cli);
+    initializeArbol(arbol);
+
+    // Initialize Cutflow
+    Cutflow cutflow = Cutflow(cli.output_name + "_Cutflow");
+    initializeCutflow(cutflow);
+
+    Cut* base = new LambdaCut(
+        "BaseCut",
+        [&]()
+        {
+            /* Cut logic */
+            arbol.setLeaf<int>("event", nt.event());
+            arbol.setLeaf<double>("xsec_sf", cli.scale_factor*nt.genWeight());
+            return true;
+        },
+        [&]()
+        {
+            /* Event weight (applied only if event passes selection above) */
+            return arbol.getLeaf<double>("xsec_sf");
+        }
+    );
+    cutflow.setRoot(base);
+
+    Cut* lhe_vars = new SelectLHEVariables("SelectLHEVariables", nt, arbol, cutflow);
+    cutflow.insert(base, lhe_vars, Right);
+
+    Cut* lep_sel = new LambdaCut(
+        "Geq2ElectronsPtGt40",
+        [&]()
+        {
+            return geq2ElectronsPtGt40(nt, arbol, cutflow);
+        }
+    );
+    cutflow.insert(lhe_vars, lep_sel, Right);
+
+    Cut* dummycut1 = new LambdaCut("DummyCut1", [&]() { return true; });
+    cutflow.insert(lep_sel, dummycut1, Right);
+
+    // Intialize progress bar
+    tqdm bar;
+
+    // Run looper
+    looper.run(
+        [&](TTree* ttree)
+        {
+            nt.Init(ttree);
+        },
+        [&](int entry)
+        {
+            if (cli.debug && looper.n_events_processed == 10000) { looper.stop(); }
+            else
+            {
+                // Reset branches and globals
+                arbol.resetBranches();
+                cutflow.globals.resetVars();
+                // Run cutflow
+                nt.GetEntry(entry);
+                bool dummycut1_passed = cutflow.run("DummyCut1");
+                if (dummycut1_passed) { arbol.fill(); }
+                // Update progress bar
+                bar.progress(looper.n_events_processed, looper.n_events_total);
+            }
+        }
+    );
+
+    // Wrap up
+    if (!cli.is_data)
+    {
+        cutflow.print();
+        cutflow.write(cli.output_dir);
     }
-    H.writeHistogram(ofile);
-    ofile->Close();
+    arbol.write();
     return 0;
 }
