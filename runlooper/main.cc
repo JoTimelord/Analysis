@@ -17,6 +17,7 @@ void initializeCutflow(Cutflow& cutflow_) {
     cutflow_.globals.newVar<LorentzVector>("sd_jet_p4");
     cutflow_.globals.newVar<LorentzVector>("ld_vbf_p4");
     cutflow_.globals.newVar<LorentzVector>("sd_vbf_p4");
+    cutflow_.globals.newVar<std::vector<int>>("jetidx");
 }
 
 int main(int argc, char** argv)
@@ -52,14 +53,15 @@ int main(int argc, char** argv)
     );
     cutflow.setRoot(base);
 
+    // Save LHE-level information
     Cut* lhe_vars = new SelectLHEVariables("SelectLHEVariables", nt, arbol, cutflow);
     cutflow.insert(base, lhe_vars, Right);
 
     Cut* lep_sel = new LambdaCut(
-        "Geq2ElectronsPtGt40",
+        "eq2ElectronsPtGt30",
         [&]()
         {
-            return geq2ElectronsPtGt40(nt, arbol, cutflow);
+            return eq2ElectronsPtGt30(nt, arbol, cutflow);
         }
     );
     cutflow.insert(lhe_vars, lep_sel, Right);
@@ -86,6 +88,9 @@ int main(int argc, char** argv)
                 cutflow.globals.resetVars();
                 // Run cutflow
                 nt.GetEntry(entry);
+                bool LHE_passed=cutflow.run("lhe_vars");
+                if (LHE_passed) { arbol.fill(); }
+
                 bool dummycut1_passed = cutflow.run("DummyCut1");
                 if (dummycut1_passed) { arbol.fill(); }
                 // Update progress bar
