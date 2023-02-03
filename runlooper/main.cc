@@ -1,13 +1,39 @@
 #include "main.h"
 
+
+/* 
+Per event weight
+*/
+// All the variables saved to preselected root files
 void initializeArbol(Arbol& arbol_) {
     arbol_.newBranch<int>("event", -999);
     arbol_.newBranch<double>("xsec_sf", -999);
-    arbol_.newBranch<double>("mvvh", -999);
-    arbol_.newBranch<double>("lt", -999);
-    arbol_.newBranch<double>("st", -999);
-    arbol_.newBranch<double>("mjj", -999);
-    arbol_.newBranch<double>("detajj", -999);
+    // LHE variables
+    arbol_.newBranch<double>("lhe_mvvh", -999);
+    arbol_.newBranch<double>("lhe_lt", -999);
+    arbol_.newBranch<double>("lhe_st", -999);
+    arbol_.newBranch<double>("lhe_mjj", -999);
+    arbol_.newBranch<double>("lhe_detajj", -999);
+    // Reconstructed variables
+    arbol_.newBranch<LorentzVector>("vbfjet1_LV", {-999,-999,-999,-999});
+    arbol_.newBranch<LorentzVector>("vbfjet2_LV", {-999,-999,-999,-999});
+    arbol_.newBranch<LorentzVector>("wjet1_LV", {-999,-999,-999,-999});
+    arbol_.newBranch<LorentzVector>("wjet2_LV", {-999,-999,-999,-999});
+    arbol_.newBranch<LorentzVector>("lep1_LV", {-999,-999,-999,-999});
+    arbol_.newBranch<LorentzVector>("lep2_LV", {-999,-999,-999,-999});
+    arbol_.newBranch<int>("lep1_ID", -999);
+    arbol_.newBranch<int>("lep2_ID", -999);
+    arbol_.newBranch<double>("mll", -999);
+    arbol_.newBranch<double>("ptll", -999.0);
+    arbol_.newBranch<double>("met", -999.0);
+    arbol_.newBranch<int>("n_ak4", -999);
+    arbol_.newBranch<int>("n_ak8", -999);
+    arbol_.newBranch<double>("hbb_score", -999);
+    arbol_.newBranch<LorentzVector>("hbb_LV", {-999,-999,-999,-999});
+    arbol_.newBranch<double>("xbb_score", -999);
+    arbol_.newBranch<double>("hbb_pnetmass", -999);
+    arbol_.newBranch<double>("hbb_pnetmass", -999);
+    arbol_.newBranch<bool>("b_veto", false);
 }
 void initializeCutflow(Cutflow& cutflow_) {
     cutflow_.globals.newVar<LorentzVector>("ld_lep_p4"); 
@@ -18,6 +44,10 @@ void initializeCutflow(Cutflow& cutflow_) {
     cutflow_.globals.newVar<LorentzVector>("ld_vbf_p4");
     cutflow_.globals.newVar<LorentzVector>("sd_vbf_p4");
     cutflow_.globals.newVar<std::vector<int>>("jetidx");
+    cutflow_.globals.newVar<float>("met_pt");
+    cutflow_.globals.newVar<float>("ST");
+    cutflow_.globals.newVar<float>("LT");
+    cutflow_.globals.newVar<bool>("medium_b_veto");
 }
 
 int main(int argc, char** argv)
@@ -88,11 +118,14 @@ int main(int argc, char** argv)
                 cutflow.globals.resetVars();
                 // Run cutflow
                 nt.GetEntry(entry);
-                bool LHE_passed=cutflow.run("lhe_vars");
+                bool LHE_passed=cutflow.run("SelectLHEVariables");
                 if (LHE_passed) { arbol.fill(); }
 
+                /*
                 bool dummycut1_passed = cutflow.run("DummyCut1");
                 if (dummycut1_passed) { arbol.fill(); }
+                */
+                
                 // Update progress bar
                 bar.progress(looper.n_events_processed, looper.n_events_total);
             }

@@ -1,4 +1,0 @@
-BaseCut,29754,226.092,0,0,null,null,SelectLHEVariables
-SelectLHEVariables,29754,226.092,0,0,BaseCut,null,Geq2ElectronsPtGt40
-Geq2ElectronsPtGt40,5844,44.55,23910,181.542,SelectLHEVariables,null,DummyCut1
-DummyCut1,5844,44.55,0,0,Geq2ElectronsPtGt40,null,null
