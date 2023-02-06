@@ -48,6 +48,25 @@ void fillTree(Nano& nt, Arbol& arbol, Cutflow& cutflow) {
     LorentzVector Z=cutflow.globals.getVal<LorentzVector>("ld_lep_p4")+cutflow.globals.getVal<LorentzVector>("sd_lep_p4");
     LorentzVector H=cutflow.globals.getVal<LorentzVector>("fatjet_p4");
     LorentzVector W=cutflow.globals.getVal<LorentzVector>("ld_jet_p4")+cutflow.globals.getVal<LorentzVector>("sd_jet_p4");
+    arbol.setLeaf<LorentzVector>("vbfjet1_LV",cutflow.globals.getVal<LorentzVector>("ld_vbf_p4"));
+    arbol.setLeaf<LorentzVector>("vbfjet2_LV",cutflow.globals.getVal<LorentzVector>("sd_vbf_p4"));
+    arbol.setLeaf<LorentzVector>("wjet1_LV",cutflow.globals.getVal<LorentzVector>("ld_jet_p4"));
+    arbol.setLeaf<LorentzVector>("wjet2_LV",cutflow.globals.getVal<LorentzVector>("sd_jet_p4"));
+    arbol.setLeaf<LorentzVector>("lep1_LV",cutflow.globals.getVal<LorentzVector>("ld_lep_p4"));
+    arbol.setLeaf<LorentzVector>("lep2_LV",cutflow.globals.getVal<LorentzVector>("sd_lep_p4"));
+    arbol.setLeaf<int>("lep1_ID", );
+    arbol_.newBranch<int>("lep2_ID", -999);
+    arbol_.newBranch<double>("mll", -999);
+    arbol_.newBranch<double>("ptll", -999.0);
+    arbol_.newBranch<double>("met", -999.0);
+    arbol_.newBranch<int>("n_ak4", -999);
+    arbol_.newBranch<int>("n_ak8", -999);
+    arbol_.newBranch<double>("hbb_score", -999);
+    arbol_.newBranch<LorentzVector>("hbb_LV", {-999,-999,-999,-999});
+    arbol_.newBranch<double>("xbb_score", -999);
+    arbol_.newBranch<double>("hbb_pnetmass", -999);
+    arbol_.newBranch<double>("hbb_pnetmass", -999);
+    arbol_.newBranch<bool>("b_veto", false);
     arbol.setLeaf<double>("mvvh", (W+H+Z).M());
     arbol.setLeaf<double>("lt", Z.Pt()+cutflow.globals.getVal<float>("met_pt"));
     arbol.setLeaf<double>("st", Z.Pt()+H.Pt()+W.Pt());
@@ -108,17 +127,18 @@ bool eq2ElectronsPtGt30(Nano& nt, Arbol& arbol, Cutflow& cutflow) {
     }
     
     // Require only two lepton events to pass
-    return (logic);
+    return logic;
 }
 
-// Function to select events with at least one fatjet (boosted Higgs); check overlap against leptons; check hbb score >= 0.9 or wjj >= 0.95
+// Function to select events with at least one fatjet (boosted Higgs); check overlap against leptons
+// Requirement on fatjet: softdropmass larger than 40, pt greater than 250, |eta|<2.5, fatjetID>0
 bool geq1FatjetsMassGt40(Nano& nt, Arbol& arbol, Cutflow& cutflow) {
     int n_fatjet=0;
     std::vector<LorentzVector> fatjets{};
-    float highesthbb=-999.999;
-    float highestwjj=-999.999;
-    int hbbindx=0;
-    int wjjindx=0;
+    float highesthbb=-999.999; // mass-correlated score
+    float highestxbb=-999.999; // mass-decorrelated score
+    int hbbindx=-999;
+    int xbbindx=-999;
     for (unsigned int ifatjet = 0; ifatjet < nt.FatJet_pt().size(); ++ifatjet) {
         // Check against overlap with leptons by checking difference in pseudorapidity (Eta) and Phi
         bool isOverlap = false;
@@ -132,38 +152,43 @@ bool geq1FatjetsMassGt40(Nano& nt, Arbol& arbol, Cutflow& cutflow) {
         }
         if (isOverlap) {continue; }
         // Check ak8 jets with softdropmass larger than 40, pt greater than 250, |eta|<2.5, fatjetID>0
-        if (nt.FatJet_msoftdrop()[ifatjet] >=40 && nt.FatJet_pt()[ifatjet]>250) {
+        if (nt.FatJet_msoftdrop()[ifatjet] >=40 && nt.FatJet_pt()[ifatjet]>250 && TMath::Abs(nt.FatJet_eta())<2.5 && nt.FatJet_jetId>0) {
             n_fatjet++;
-            // Select boosted higgs
+            // Select boosted higgs by hbb
             if (nt.FatJet_particleNet_HbbvsQCD()[ifatjet] > highesthbb) { 
                 hbbindx = ifatjet; 
                 highesthbb = nt.FatJet_particleNet_HbbvsQCD()[ifatjet];
             }
-            /* if (nt.FatJet_particleNet_WvsQCD()[ifatjet] > highestwjj) {
-                wjjindx = ifatjet;
-                highestwjj = nt.FatJet_particleNet_WvsQCD()[ifatjet];
+            // Select boosted Higgs by xbb
+            if (nt.FatJet_particleNetMD_Xbb()[ifatjet] > highestxbb) {
+                xbbindx = ifatjet;
+                highestxbb = nt.FatJet_particleNetMD_Xbb()[ifatjet];
             }
-            */
         }
     }
-    /* keep track of hbb score, xbb score(mass-decorrelated) 
-    Make a separate lambda cut that's looser in hbb score
-    */
     // Select Logic: Pass events with at least one fatjets
-
     bool logic = (n_fatjet >= 1 && highesthbb >= 0.9);
     if (logic) {
         LorentzVector p4;
         p4.SetCoordinates(nt.FatJet_pt()[hbbindx], nt.FatJet_eta()[hbbindx], nt.FatJet_phi()[hbbindx], nt.FatJet_msoftdrop()[hbbindx]);
         cutflow.globals.setVal<LorentzVector>("fatjet_p4", p4);
+        cutflow.globals.setVal<double>("hbb",highesthbb);
+        cutflow.globals.setVal<double>("xbb",highestxbb);
+        cutflow.globals.setVal<bool>("samejet", (hbbindx==xbbindx));
     }
-    return (logic);
+    return logic;
+}
+
+
+// Function to make checks on fatjet score
+bool fatJetHbbScore(Nano& nt, Arbol& arbol, Cutflow& cutflow, double setscore=0.5) {
+    bool logic = (cutflow.globals.getVal<double>("hbb") >= setscore);
+    return logic;
 }
 
 // Function to select events with at least four ak4 jets with Pt > 30; check overlap against leptons;
 // check overlap against fatjets
 // Select VBF jets
-// dEta(VBF)>4
 bool geq4JetsPtGt30(Nano& nt, Arbol& arbol, Cutflow& cutflow) {
     std::vector<LorentzVector> jets{};
     int n_jets=0;
@@ -225,8 +250,24 @@ bool geq4JetsPtGt30(Nano& nt, Arbol& arbol, Cutflow& cutflow) {
         //cutflow.globals.setVal<bool>("medium_b_veto", (nt.Jet_btagDeepFlavB()[ijet] > gconf.WP_DeepFlav_medium))
         cutflow.globals.setVal<float>("met_pt", nt.MET_pt());
     }
-    return (pass);
+    return pass;
 }
+
+
+// Preselection functions
+// Function to select VBF system mass >= 500
+bool mjjGt500(Nano& nt, Arbol& arbol, Cutflow& cutflow) {
+    cutflow.globals.setVal<double>("mjj", (cutflow.globals.getVal<LorentzVector>("ld_vbf_p4") + cutflow.globals.setVal<LorentzVector>("sd_vbf_p4")).M());
+    bool logic = (cutflow.globals.getVal<double>("mjj")>=500);
+    return logic;
+}
+
+// Function to select delta eta between VBF jets >= 3, then fill the selections
+bool deltaEtaGt3(Nano& nt, Arbol& arbol, Cutflow& cutflow) {
+    cutflow.globals.setVal<double>("detajj", TMath::Abs(cutflow.globals.getVal<LorentzVector>("ld_vbf_p4").eta()-cutflow.globals.getVal<LorentzVector>("sd_vbf_p4").eta()));
+    bool logic = (cutflow.globals.getVal<double>("detajj")>=3);
+}
+
 
 // Function to calculate and select ST
 bool stgeq950(Nano& nt, Arbol& arbol, Cutflow& cutflow) {
@@ -248,6 +289,8 @@ public:
 
     virtual ~AnalysisCut() {}
 };
+
+
 
 class SelectLHEVariables : public AnalysisCut
 {
@@ -298,11 +341,11 @@ public:
         selectVBFs(VBFindx1, VBFindx2, jets);
         
         // Set variables to arbol tree, 'mvvh', 'lt', 'st', 'mjj', 'detajj'
-        arbol.setLeaf<double>("mvvh", (W+H+Z).M());
-        arbol.setLeaf<double>("lt", Z.Pt());
-        arbol.setLeaf<double>("st", W.Pt()+H.Pt()+Z.Pt());
-        arbol.setLeaf<double>("mjj", (jets[VBFindx1]+jets[VBFindx2]).M());
-        arbol.setLeaf<double>("detajj", (TMath::Abs(jets[VBFindx1].Eta()-jets[VBFindx2].Eta())));
+        arbol.setLeaf<double>("lhe_mvvh", (W+H+Z).M());
+        arbol.setLeaf<double>("lhe_lt", Z.Pt());
+        arbol.setLeaf<double>("lhe_st", W.Pt()+H.Pt()+Z.Pt());
+        arbol.setLeaf<double>("lhe_mjj", (jets[VBFindx1]+jets[VBFindx2]).M());
+        arbol.setLeaf<double>("lhe_detajj", (TMath::Abs(jets[VBFindx1].Eta()-jets[VBFindx2].Eta())));
 
         // Cut logic 
         return true;

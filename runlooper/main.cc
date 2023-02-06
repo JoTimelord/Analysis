@@ -48,6 +48,9 @@ void initializeCutflow(Cutflow& cutflow_) {
     cutflow_.globals.newVar<float>("ST");
     cutflow_.globals.newVar<float>("LT");
     cutflow_.globals.newVar<bool>("medium_b_veto");
+    cutflow_.globals.newVar<double>("hbb");
+    cutflow_.globals.newVar<double>("xbb");
+    cutflow_.globals.newVar<bool>("samejet"); // Check if highest xbb and highest hbb come from the same jet
 }
 
 int main(int argc, char** argv)
