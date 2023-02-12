@@ -3,11 +3,11 @@
 
 rm -f .jobs.txt
 rm -r ~/Analysis/logfiles
-rm -r ~/Analysis/outputs
+rm -r ~/Analysis/output
 
 mkdir ~/Analysis/logfiles
-mkdir ~/Analysis/outputs
+mkdir ~/Analysis/output
 
-cp ~/ranscripts/.jobs.txt ~/Analysis/.jobs.txt
+cp ~/Analysis/tools/.jobs.txt ~/Analysis/.jobs.txt
 
 xargs.sh .jobs.txt

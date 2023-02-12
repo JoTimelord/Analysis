@@ -19,9 +19,10 @@ $(SUBDIRS): NanoCORE rapido tools
 
 clean:
 	cd runlooper/ && make clean;
+	cd $${HOME}/Analysis/tools/ && make clean;
 
 cleanall:
 	cd $${HOME}/Utils/rapido/ && make clean;
-	cd tools/ && make clean;
+	cd $${HOME}/Analysis/tools/ && make clean;
 	cd $${HOME}/Utils/NanoTools/NanoCORE/ && make clean;
 	cd runlooper/ && make clean;

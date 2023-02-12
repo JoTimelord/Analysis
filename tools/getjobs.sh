@@ -8,8 +8,8 @@ BKGYEARS="20UL16NanoAODv9 \
 20UL17NanoAODv9 \
 20UL18NanoAODv9"
 
-SIGYEARS="20UL16APV \
-20UL16 \
+SIGYEARS="20UL16APV- \
+20UL16- \
 20UL17 \
 20UL18"
 
@@ -59,7 +59,7 @@ for BKGPROCESS in ${BKGPROCESSES}; do
             SUMMEDWGT=$( python3 scale1fb.py -f ${BKGDIR}/${INPUTDIR} )
             SCALE1FB=$( echo "scale=10; ${XSECTION} * ${LUMINOSITY} / ${SUMMEDWGT}" | bc )
             echo ${BKGPROCESS} ${KEY} ${YEAR} ${LUMINOSITY} ${XSECTION} ${SUMMEDWGT} ${SCALE1FB} >> weightsbkg.txt
-            echo "./runLooper -t Events -d output -s ${SCALE1FB} -n ${KEY}_${YEAR} -T tree ${SIGDIR}/${INPUTDIR}/merged.root> ~/Analysis/logfiles/${BKGPROCESS}_${IFILE}.log 2>&1" >> .jobs.txt
+            echo "./runLooper -t Events -d output -s ${SCALE1FB} -n ${KEY}_${YEAR}_${IFILE} -T tree ${BKGDIR}/${INPUTDIR}/merged.root > ~/Analysis/logfiles/${BKGPROCESS}_${IFILE}.log 2>&1" >> .jobs.txt
         done
     done
 done
@@ -69,8 +69,8 @@ for SIGPROCESS in ${SIGPROCESSES}; do
     IFILE=0
     XSECTION=1.67403
     for YEAR in ${SIGYEARS}; do
-        if [[ ${YEAR} == "20UL16APV" ]]; then LUMINOSITY=19.52; fi
-        if [[ ${YEAR} == "20UL16" ]]; then LUMINOSITY=16.81; fi
+        if [[ ${YEAR} == "20UL16APV-" ]]; then LUMINOSITY=19.52; fi
+        if [[ ${YEAR} == "20UL16-" ]]; then LUMINOSITY=16.81; fi
         if [[ ${YEAR} == "20UL17" ]]; then LUMINOSITY=41.48; fi
         if [[ ${YEAR} == "20UL18" ]]; then LUMINOSITY=59.83; fi
         for INPUTDIR in $(ls ${SIGDIR} | grep ${SIGPROCESS} | grep ${YEAR}); do
