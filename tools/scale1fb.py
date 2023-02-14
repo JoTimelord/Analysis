@@ -42,8 +42,9 @@ if __name__ == "__main__":
 
 # Read arguments from command line
     args = parser.parse_args()
-    number1 = nevents(args.file)
+    #number1 = nevents(args.file)
     number2 = sumGenWeights(args.file)
     print (number2)
+    #print (number2)
 
 

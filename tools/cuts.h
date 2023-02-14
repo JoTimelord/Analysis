@@ -120,7 +120,7 @@ bool eq2ElectronsPtGt30(Nano& nt, Arbol& arbol, Cutflow& cutflow) {
         int ldid=-999;
         int sdid=-999;
         // Select leading and subleading leptons with their pdgids
-        if (elec.size()==3) {
+        if (elec.size()==2) {
             ld=(elec.at(0)).Pt()>(elec.at(1)).Pt() ? elec.at(0):elec.at(1);
             sd=(elec.at(1)).Pt()>(elec.at(0)).Pt() ? elec.at(0):elec.at(1);
             ldid=(elec.at(0)).Pt()>(elec.at(1)).Pt() ? pdgids.at(0):pdgids.at(1);
