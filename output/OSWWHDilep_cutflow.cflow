@@ -1,0 +1,9 @@
+BaseCut,1388,1.147074,0,0.0,null,null,SelectLHEVariables
+SelectLHEVariables,1388,1.147074,0,0.0,BaseCut,null,eq2ElectronsPtGt30
+eq2ElectronsPtGt30,653,0.5470946,735,0.5999789,SelectLHEVariables,null,geq2Fatjets
+geq2Fatjets,175,0.1470593,478,0.40003489999999997,eq2ElectronsPtGt30,null,fatJetsScores
+fatJetsScores,48,0.04044449,127,0.10661480000000001,geq2Fatjets,null,geq2JetsPtGt30
+geq2JetsPtGt30,43,0.03694016,5,0.003504289,fatJetsScores,null,mjjGt500
+mjjGt500,33,0.028382169999999998,10,0.008557959,geq2JetsPtGt30,null,deltaEtaGt3
+deltaEtaGt3,1,0.00104718,32,0.027334989999999997,mjjGt500,null,stgeq950
+stgeq950,1,0.00104718,0,0.0,deltaEtaGt3,null,null

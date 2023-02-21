@@ -1,9 +1,9 @@
-BaseCut,206966,15100.45,0,0.0,null,null,SelectLHEVariables
-SelectLHEVariables,206966,15100.45,0,0.0,BaseCut,null,eq2ElectronsPtGt30
-eq2ElectronsPtGt30,19346,1410.4009999999998,187620,13690.04,SelectLHEVariables,null,geq1FatjetsMassGt40
-geq1FatjetsMassGt40,7090,517.1269,12256,893.2749999999999,eq2ElectronsPtGt30,null,fatJetHbbScore
-fatJetHbbScore,172,12.597850000000001,6918,504.5298,geq1FatjetsMassGt40,null,geq4JetsPtGt30
-geq4JetsPtGt30,5,0.3818059,167,12.21605,fatJetHbbScore,null,mjjGt500
-mjjGt500,2,0.1522421,3,0.2295641,geq4JetsPtGt30,null,deltaEtaGt3
-deltaEtaGt3,0,0.0,2,0.1522421,mjjGt500,null,stgeq950
+BaseCut,1162,84.46395,0,0.0,null,null,SelectLHEVariables
+SelectLHEVariables,1162,84.46395,0,0.0,BaseCut,null,eq2ElectronsPtGt30
+eq2ElectronsPtGt30,549,40.17215,613,44.291830000000004,SelectLHEVariables,null,geq2Fatjets
+geq2Fatjets,71,5.176738,478,34.99545,eq2ElectronsPtGt30,null,fatJetsScores
+fatJetsScores,3,0.2219343,68,4.954803999999999,geq2Fatjets,null,geq2JetsPtGt30
+geq2JetsPtGt30,3,0.2219343,0,0.0,fatJetsScores,null,mjjGt500
+mjjGt500,2,0.1504994,1,0.0714351,geq2JetsPtGt30,null,deltaEtaGt3
+deltaEtaGt3,0,0.0,2,0.1504994,mjjGt500,null,stgeq950
 stgeq950,0,0.0,0,0.0,deltaEtaGt3,null,null

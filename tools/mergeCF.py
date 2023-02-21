@@ -33,8 +33,26 @@ SIG_SAMPLE_MAP = {
     "WZHDilep": {
         "20UL16APV*":["WZH*"],
         "20UL16*":["WZH*"],
-        "20UL17":["WZH*"],
-        "20UL18":["WZH*"],
+        "20UL17*":["WZH*"],
+        "20UL18*":["WZH*"],
+    },
+    "OSWWHDilep": {
+        "20UL16APV*":["OSWWH*"],
+        "20UL16*":["OSWWH*"],
+        "20UL17*":["OSWWH*"],
+        "20UL18*":["OSWWH*"],
+    },
+    "ZZHDilep": {
+        "20UL16APV*":["ZZH*"],
+        "20UL16*":["ZZH*"],
+        "20UL17*":["ZZH*"],
+        "20UL18*":["ZZH*"],
+    },
+    "WWHDilep": {
+        "20UL16APV*":["WWH*"],
+        "20UL16*":["WWH*"],
+        "20UL17*":["WWH*"],
+        "20UL18*":["WWH*"],
     }
 }
 
@@ -92,8 +110,10 @@ if __name__ == "__main__":
     cutflows = merge(output_dir, BKG_SAMPLE_MAP)
     cutflows["TotalBkg"] = cutflows.sum()
     # Get Cutflow objects for signal samples
-    cutflows += merge(output_dir, SIG_SAMPLE_MAP)
-    cutflows.reorder(["WZHDilep", "TotalBkg", "DYJetsToLL", "ttdilep", "WWDilep"])
+    cutflows2 = merge(output_dir, SIG_SAMPLE_MAP)
+    cutflows["TotalSig"] = cutflows2.sum()
+    cutflows += cutflows2
+    cutflows.reorder(["WZHDilep", "WWHDilep", "OSWWHDilep", "ZZHDilep", "TotalSig", "TotalBkg", "DYJetsToLL", "ttdilep", "WWDilep"])
 
     # Write .cflow files
     for group_name, cutflow in cutflows.items():
