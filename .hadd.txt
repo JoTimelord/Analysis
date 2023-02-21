@@ -1,4 +1,0 @@
-hadd -f hadds/DYJetsToLL.root output/DYJetsToLL*.root > hadds/DYJetsToLL.log 2>&1
-hadd -f hadds/WZH.root output/WZH*.root > hadds/WZH.log 2>&1
-hadd -f hadds/TTTo2L2Nu.root output/TTTo2L2Nu*.root > hadds/TTTo2L2Nu.log 2>&1
-hadd -f hadds/WWTo2L2Nu.root output/WWTo2L2Nu*.root > hadds/WWTo2L2Nu.log 2>&1
