@@ -11,7 +11,8 @@
 #include "Config.h"
 #include "tqdm.h"
 // Custom
-#include "cuts.h"
+#include "cutstwo.h"
+#include "LHELevel.h"
 
 void oneFatJetCutflow(Arbol& arbol, Cutflow& cutflow);
 void twoFatJetCutflow(Arbol& arbol, Cutflow& cutflow);

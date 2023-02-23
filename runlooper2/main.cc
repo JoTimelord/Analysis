@@ -50,7 +50,7 @@ int main(int argc, char** argv)
         "eq2ElectronsPtGt30",
         [&]()
         {
-            return eq2ElectronsPtGt30(nt, arbol, cutflow);
+            return TWOFATJETSCUT::eq2ElectronsPtGt30(nt, arbol, cutflow);
         }
     );
     cutflow.insert(lhe_vars, lep_sel, Right);
@@ -92,7 +92,7 @@ int main(int argc, char** argv)
         "mjjGt500",
         [&]()
         {
-            return mjjGt500(nt, arbol, cutflow);
+            return TWOFATJETSCUT::mjjGt500(nt, arbol, cutflow);
         }
     );
     cutflow.insert(ak4_sel, mjj_sel, Right);
@@ -102,7 +102,7 @@ int main(int argc, char** argv)
         "deltaEtaGt3",
         [&]()
         {
-            return deltaEtaGt3(nt, arbol, cutflow);
+            return TWOFATJETSCUT::deltaEtaGt3(nt, arbol, cutflow);
         }
     );
     cutflow.insert(mjj_sel, deta_sel, Right);

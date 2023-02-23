@@ -29,7 +29,7 @@ BKG_SAMPLE_MAP = {
     }
 }
 
-SIG_SAMPLE_MAP = {
+SIG_SAMPLE_MAP_2 = {
     "WZHDilep": {
         "20UL16APV*":["WZH*"],
         "20UL16*":["WZH*"],
@@ -53,6 +53,27 @@ SIG_SAMPLE_MAP = {
         "20UL16*":["WWH*"],
         "20UL17*":["WWH*"],
         "20UL18*":["WWH*"],
+    },
+}
+
+SIG_SAMPLE_MAP_1 = {
+    "OSWWH_C2V_3": {
+        "20UL16APV*": ["VBSOSWWH_incl_C2V_3*"],
+        "20UL16*": ["VBSOSWWH_incl_C2V_3*"],
+        "20UL17*": ["VBSOSWWH_incl_C2V_3*"],
+        "20UL18*": ["VBSOSWWH_incl_C2V_3*"],
+    },
+    "WZH_C2V_3": {
+        "20UL16APV*": ["VBSWZH_incl_C2V_3*"],
+        "20UL16*": ["VBSWZH_incl_C2V_3*"],
+        "20UL17*": ["VBSWZH_incl_C2V_3*"],
+        "20UL18*": ["VBSWZH_incl_C2V_3*"],
+    },
+    "ZZH_C2V_3": {
+        "20UL16APV*": ["VBSZZH_incl_C2V_3*"],
+        "20UL16*": ["VBSZZH_incl_C2V_3*"],
+        "20UL17*": ["VBSZZH_incl_C2V_3*"],
+        "20UL18*": ["VBSZZH_incl_C2V_3*"],
     }
 }
 
@@ -103,17 +124,19 @@ def merge(output_dir, sample_map, n_hadders=8):
 
 if __name__ == "__main__":
     # create hadded output directory
-    output_dir="/home/users/joytzphysics/Analysis/output"
+    # output_dir="/home/users/joytzphysics/Analysis/output"
+    output_dir="/home/users/joytzphysics/Analysis/output2"
     os.makedirs(output_dir, exist_ok=True)
 
     # Get Cutflow objects for background samples
     cutflows = merge(output_dir, BKG_SAMPLE_MAP)
     cutflows["TotalBkg"] = cutflows.sum()
     # Get Cutflow objects for signal samples
-    cutflows2 = merge(output_dir, SIG_SAMPLE_MAP)
-    cutflows["TotalSig"] = cutflows2.sum()
-    cutflows += cutflows2
-    cutflows.reorder(["WZHDilep", "WWHDilep", "OSWWHDilep", "ZZHDilep", "TotalSig", "TotalBkg", "DYJetsToLL", "ttdilep", "WWDilep"])
+    # cutflows = merge(output_dir, SIG_SAMPLE_MAP_1)
+    cutflows += merge(output_dir, SIG_SAMPLE_MAP_2)
+    # cutflows["TotalSig"] = cutflows2.sum()
+    cutflows.reorder(["WWHDilep","WZHDilep","OSWWHDilep", "ZZHDilep", "TotalBkg", "DYJetsToLL", "ttdilep", "WWDilep"])
+    # cutflows.reorder(["WWDilep","WZHDilep","OSWWHDilep", "ZZHDilep","OSWWH_C2V_3", "WZH_C2V_3", "ZZH_C2V_3"])
 
     # Write .cflow files
     for group_name, cutflow in cutflows.items():
@@ -124,4 +147,3 @@ if __name__ == "__main__":
         cutflows.write_csv(f"{output_dir}/cutflow_{terminal_cut_name}.csv", terminal_cut_name)
         cutflows.write_txt(f"{output_dir}/cutflow_{terminal_cut_name}.txt", terminal_cut_name)
         cutflows.write_tex(f"{output_dir}/cutflow_{terminal_cut_name}.tex", terminal_cut_name)
-

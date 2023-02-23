@@ -1,7 +1,8 @@
 #!/bin/bash
 
 BKGDIR=/ceph/cms/store/user/jguiang/VBSVHSkim/bkg_2oslep_2ak4_1ak8
-SIGDIR=/ceph/cms/store/user/jguiang/VBSVHSkim/sig_2oslep_2ak4_1ak8
+# SIGDIR=/ceph/cms/store/user/jguiang/VBSVHSkim/sig_2oslep_2ak4_1ak8
+SIGDIR=/ceph/cms/store/user/jguiang/VBSVHSkim/sig_1lep_1ak8_2ak4_v1
 
 BKGYEARS="20UL16NanoAODv9 \
 20UL16NanoAODAPVv9 \
