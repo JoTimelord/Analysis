@@ -408,24 +408,6 @@ bool ONEFATJETCUT::stgeq950(Nano& nt, Arbol& arbol, Cutflow& cutflow) {
 }
 
 
-
-class AnalysisCut : public Cut
-{
-public:
-    Arbol& arbol;
-    Nano& nt;
-    Utilities::Variables& globals;
-
-    AnalysisCut(std::string name, Nano& _nt, Arbol& _arbol, Cutflow& _cutflow)
-    : Cut(name), arbol(_arbol), nt(_nt), globals(_cutflow.globals)
-    {
-        // Do nothing
-    }
-
-    virtual ~AnalysisCut() {}
-};
-
-class SelectLHEVariables : public AnalysisCut
 {
 public:
     SelectLHEVariables(std::string name, Nano& nt, Arbol& arbol, Cutflow& cutflow)

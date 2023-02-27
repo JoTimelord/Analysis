@@ -14,7 +14,5 @@
 #include "cutstwo.h"
 #include "LHELevel.h"
 
-void oneFatJetCutflow(Arbol& arbol, Cutflow& cutflow);
-void twoFatJetCutflow(Arbol& arbol, Cutflow& cutflow);
 int main(int argc, char** argv);
 
