@@ -47,10 +47,10 @@ int main(int argc, char** argv)
     // OBJECT SELECTION
     // Electron/Muon selection
     Cut* lep_sel = new LambdaCut(
-        "eq2ElectronsPtGt30",
+        "eq2OSLeptonsPtGt30",
         [&]()
         {
-            return eq2ElectronsPtGt30(nt, arbol, cutflow);
+            return eq2OSLeptonsPtGt30(nt, arbol, cutflow);
         }
     );
     cutflow.insert(lhe_vars, lep_sel, Right);

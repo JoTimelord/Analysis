@@ -11,8 +11,9 @@
 #include "Config.h"
 #include "tqdm.h"
 // Custom
-#include "cutstwo.h"
+#include "sharedcuts.h"
+#include "sel2fj.h"
 #include "LHELevel.h"
 
-int main(int argc, char** argv);
 
+int main(int argc, char** argv);

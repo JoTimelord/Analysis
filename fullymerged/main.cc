@@ -47,10 +47,10 @@ int main(int argc, char** argv)
     // OBJECT SELECTION
     // Electron/Muon selection
     Cut* lep_sel = new LambdaCut(
-        "eq2ElectronsPtGt30",
+        "eq2OSLeptonsPtGt30",
         [&]()
         {
-            return TWOFATJETSCUT::eq2ElectronsPtGt30(nt, arbol, cutflow);
+            return eq2OSLeptonsPtGt30(nt, arbol, cutflow);
         }
     );
     cutflow.insert(lhe_vars, lep_sel, Right);
@@ -67,13 +67,23 @@ int main(int argc, char** argv)
 
     // Hbb score selection
     Cut* hbb_sel = new LambdaCut(
-        "fatJetsScores",
+        "hbbScore",
         [&]()
         {
-            return TWOFATJETSCUT::fatJetsScores(nt, arbol, cutflow);
+            return TWOFATJETSCUT::hbbScore(nt, arbol, cutflow);
         }
     );
     cutflow.insert(ak8_sel, hbb_sel, Right);
+
+    // Vxqq score selection
+    Cut* vqq_sel = new LambdaCut(
+        "xvqqScore",
+        [&]()
+        {
+            return TWOFATJETSCUT::xvqqScore(nt, arbol, cutflow);
+        }
+    );
+    cutflow.insert(hbb_sel, vqq_sel, Right);
 
     // ak4 jets Selection
     Cut* ak4_sel = new LambdaCut(
@@ -83,7 +93,7 @@ int main(int argc, char** argv)
             return TWOFATJETSCUT::geq2JetsPtGt30(nt, arbol, cutflow);
         }
     );
-    cutflow.insert(hbb_sel, ak4_sel, Right);
+    cutflow.insert(vqq_sel, ak4_sel, Right);
 
     // =========================================================================================
     // PRESELECTION
@@ -92,7 +102,7 @@ int main(int argc, char** argv)
         "mjjGt500",
         [&]()
         {
-            return TWOFATJETSCUT::mjjGt500(nt, arbol, cutflow);
+            return mjjGt500(nt, arbol, cutflow);
         }
     );
     cutflow.insert(ak4_sel, mjj_sel, Right);
@@ -102,7 +112,7 @@ int main(int argc, char** argv)
         "deltaEtaGt3",
         [&]()
         {
-            return TWOFATJETSCUT::deltaEtaGt3(nt, arbol, cutflow);
+            return deltaEtaGt3(nt, arbol, cutflow);
         }
     );
     cutflow.insert(mjj_sel, deta_sel, Right);

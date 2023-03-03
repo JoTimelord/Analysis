@@ -11,10 +11,6 @@
 #include "Config.h"
 #include "tqdm.h"
 // Custom
+#include "sharedcuts.h"
 #include "sel1fj.h"
 #include "LHELevel.h"
-#include "sharedcuts.h"
-
-
-int main(int argc, char** argv);
-
