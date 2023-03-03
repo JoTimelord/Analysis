@@ -9,46 +9,76 @@ from subprocess import Popen, PIPE
 from cutflow import Cutflow, CutflowCollection
 
 BKG_SAMPLE_MAP = {
-    "DYJetsToLL": {
-        "20UL16NanoAODv9*":["DYJetsToLL*"],
-        "20UL16NanoAODAPVv9*":["DYJetsToLL*"],
-        "20UL17NanoAODv9*":["DYJetsToLL*"],
-        "20UL18NanoAODv9*":["DYJetsToLL*"],
+    "EWKWLep": {
+        "20UL16NanoAODv9*":["EWKW*WToLNu*"],
+        "20UL16NanoAODAPVv9*":["EWKW*WToLNu*"],
+        "20UL17NanoAODv9*":["EWKW*WToLNu*"],
+        "20UL18NanoAODv9*":["EWKW*WToLNu*"],
     },
-    "WWDilep": {
-        "20UL16NanoAODv9*":["WWTo2L2Nu*"],
-        "20UL16NanoAODAPVv9*":["WWTo2L2Nu*"],
-        "20UL17NanoAODv9*":["WWTo2L2Nu*"],
-        "20UL18NanoAODv9*":["WWTo2L2Nu*"],
+    "Bosons": {
+        "20UL16NanoAODv9*":["WW*", "WZ*", "ZZ*", "DY*", "EWKW*WToQQ*", "EWKZ*ZToNuNu*", "EWKZ*ZToLL*", "EWKZ*ZToQQ*"],
+        "20UL16NanoAODAPVv9*":["WW*", "WZ*", "ZZ*", "DY*", "EWKW*WToQQ*", "EWKZ*ZToNuNu*", "EWKZ*ZToLL*", "EWKZ*ZToQQ*"],
+        "20UL17NanoAODv9*":["WW*", "WZ*", "ZZ*", "DY*", "EWKW*WToQQ*", "EWKZ*ZToNuNu*", "EWKZ*ZToLL*", "EWKZ*ZToQQ*"],
+        "20UL18NanoAODv9*":["WW*", "WZ*", "ZZ*", "DY*", "EWKW*WToQQ*", "EWKZ*ZToNuNu*", "EWKZ*ZToLL*", "EWKZ*ZToQQ*"],
+    },
+    "SingleTop": {
+        "20UL16NanoAODv9*":["ST*"],
+        "20UL16NanoAODAPVv9*":["ST*"],
+        "20UL17NanoAODv9*":["ST*"],
+        "20UL18NanoAODv9*":["ST*"],
     },
     "ttdilep": {
-        "20UL16NanoAODv9*":["TTTo2L2Nu*"],
-        "20UL16NanoAODAPVv9*":["TTTo2L2Nu*"],
-        "20UL17NanoAODv9*":["TTTo2L2Nu*"],
-        "20UL18NanoAODv9*":["TTTo2L2Nu*"],
-    }
+        "20UL16NanoAODv9*":["TTTo2L*"],
+        "20UL16NanoAODAPVv9*":["TTTo2L*"],
+        "20UL17NanoAODv9*":["TTTo2L*"],
+        "20UL18NanoAODv9*":["TTTo2L*"],
+    },
+    "ttsemilep": {
+        "20UL16NanoAODv9*":["TTToSemiLep*"],
+        "20UL16NanoAODAPVv9*":["TTToSemiLep*"],
+        "20UL17NanoAODv9*":["TTToSemiLep*"],
+        "20UL18NanoAODv9*":["TTToSemiLep*"],
+    },
+    "TTX": {
+        "20UL16NanoAODv9*":["ttH*", "TTW*", "TTZ*", "TTbb*", "TTToHadronic*"],
+        "20UL16NanoAODAPVv9*":["ttH*", "TTW*", "TTZ*", "TTbb*", "TTToHadronic*"],
+        "20UL17NanoAODv9*":["ttH*", "TTW*", "TTZ*", "TTbb*", "TTToHadronic*"],
+        "20UL18NanoAODv9*":["ttH*", "TTW*", "TTZ*", "TTbb*", "TTToHadronic*"],
+    },
+    "VH": {
+        "20UL16NanoAODv9*": ["VHToNonbb*", "WminusH*", "WplusH*", "ZH_HToBB*", "ggZH_HToBB*"],
+        "20UL16NanoAODAPVv9*": ["VHToNonbb*", "WminusH*", "WplusH*", "ZH_HToBB*", "ggZH_HToBB*"],
+        "20UL17NanoAODv9*": ["VHToNonbb*", "WminusH*", "WplusH*", "ZH_HToBB*", "ggZH_HToBB*"],
+        "20UL18NanoAODv9*": ["VHToNonbb*", "WminusH*", "WplusH*", "ZH_HToBB*", "ggZH_HToBB*"],
+    },
+    "WJets": {
+        "20UL16NanoAODv9*": ["WJets*"],
+        "20UL16NanoAODAPVv9*": ["WJets*"],
+        "20UL17NanoAODv9*": ["WJets*"],
+        "20UL18NanoAODv9*": ["WJets*"],
+    },
 }
 
 SIG_SAMPLE_MAP_2 = {
-    "WZHDilep": {
+    "WZH": {
         "20UL16APV*":["WZH*"],
         "20UL16*":["WZH*"],
         "20UL17*":["WZH*"],
         "20UL18*":["WZH*"],
     },
-    "OSWWHDilep": {
+    "OSWWH": {
         "20UL16APV*":["OSWWH*"],
         "20UL16*":["OSWWH*"],
         "20UL17*":["OSWWH*"],
         "20UL18*":["OSWWH*"],
     },
-    "ZZHDilep": {
+    "ZZH": {
         "20UL16APV*":["ZZH*"],
         "20UL16*":["ZZH*"],
         "20UL17*":["ZZH*"],
         "20UL18*":["ZZH*"],
     },
-    "WWHDilep": {
+    "WWH": {
         "20UL16APV*":["WWH*"],
         "20UL16*":["WWH*"],
         "20UL17*":["WWH*"],
@@ -124,8 +154,9 @@ def merge(output_dir, sample_map, n_hadders=8):
 
 if __name__ == "__main__":
     # create hadded output directory
-    # output_dir="/home/users/joytzphysics/Analysis/output"
-    output_dir="/home/users/joytzphysics/Analysis/output2"
+    # output_dir="/home/users/joytzphysics/Analysis/outputs/output_semiMerge_2oslep_2ak4_1ak8"
+    # output_dir="/home/users/joytzphysics/Analysis/outputs/output_semiMerge_2oslep_2ak4_1ak8_v2"
+    output_dir="/home/users/joytzphysics/Analysis/outputs/output_semiMerge_1lep_1ak8_2ak4_v1"
     os.makedirs(output_dir, exist_ok=True)
 
     # Get Cutflow objects for background samples
@@ -133,9 +164,10 @@ if __name__ == "__main__":
     cutflows["TotalBkg"] = cutflows.sum()
     # Get Cutflow objects for signal samples
     # cutflows = merge(output_dir, SIG_SAMPLE_MAP_1)
-    cutflows += merge(output_dir, SIG_SAMPLE_MAP_2)
-    # cutflows["TotalSig"] = cutflows2.sum()
-    cutflows.reorder(["WWHDilep","WZHDilep","OSWWHDilep", "ZZHDilep", "TotalBkg", "DYJetsToLL", "ttdilep", "WWDilep"])
+    cutflows_sig= merge(output_dir, SIG_SAMPLE_MAP_2)
+    cutflows += cutflows_sig
+    cutflows["TotalSig"] = cutflows_sig.sum()
+    cutflows.reorder(["WWH","WZH","OSWWH", "ZZH", "TotalSig", "TotalBkg", "VH", "EWKWLep", "Bosons", "WJets", "SingleTop", "TTX", "ttsemilep", "ttdilep"])
     # cutflows.reorder(["WWDilep","WZHDilep","OSWWHDilep", "ZZHDilep","OSWWH_C2V_3", "WZH_C2V_3", "ZZH_C2V_3"])
 
     # Write .cflow files

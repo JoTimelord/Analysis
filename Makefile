@@ -1,4 +1,4 @@
-SUBDIRS := runlooper2 runlooper1
+SUBDIRS := semimerged fullymerged
 LIBRARIES := $${HOME}/Utils/NanoTools/NanoCORE $${HOME}/Utils/rapido tools
 
 all: $(LIBRARIES) $(SUBDIRS)
@@ -18,11 +18,13 @@ $(SUBDIRS): NanoCORE rapido tools
 .PHONY: all $(LIBRARIES) $(SUBDIRS)
 
 clean:
-	cd runlooper2/ && make clean;
+	cd semimerged/ && make clean;
+	cd fullymerged/ && make clean;
 	cd $${HOME}/Analysis/tools/ && make clean;
 
 cleanall:
 	cd $${HOME}/Utils/rapido/ && make clean;
 	cd $${HOME}/Analysis/tools/ && make clean;
 	cd $${HOME}/Utils/NanoTools/NanoCORE/ && make clean;
-	cd runlooper2/ && make clean;
+	cd semimerged/ && make clean;
+	cd fullymerged/ && make clean;

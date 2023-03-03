@@ -1,28 +1,28 @@
 Cutflow
 └☑─BaseCut
-   pass: 101505 (raw) 371147 (wgt)
+   pass: 3554 (raw) 12995 (wgt)
    fail: 0 (raw)
    └☑─SelectLHEVariables
-      pass: 101505 (raw) 371147 (wgt)
+      pass: 3554 (raw) 12995 (wgt)
       fail: 0 (raw)
       └☑─eq2ElectronsPtGt30
-         pass: 37771 (raw) 138107 (wgt)
-         fail: 63734 (raw) 233039 (wgt)
+         pass: 3547 (raw) 12969.4 (wgt)
+         fail: 7 (raw) 25.5951 (wgt)
          └☑─geq1FatjetsMassGt40
-            pass: 12198 (raw) 44601.2 (wgt)
-            fail: 25573 (raw) 93506.1 (wgt)
+            pass: 3543 (raw) 12954.8 (wgt)
+            fail: 4 (raw) 14.6258 (wgt)
             └☑─fatJetHbbScore
-               pass: 444 (raw) 1623.46 (wgt)
-               fail: 11754 (raw) 42977.8 (wgt)
+               pass: 140 (raw) 511.901 (wgt)
+               fail: 3403 (raw) 12442.9 (wgt)
                └☑─geq4JetsPtGt30
-                  pass: 35 (raw) 127.975 (wgt)
-                  fail: 409 (raw) 1495.48 (wgt)
+                  pass: 21 (raw) 76.7852 (wgt)
+                  fail: 119 (raw) 435.116 (wgt)
                   └☑─mjjGt500
-                     pass: 19 (raw) 69.4723 (wgt)
-                     fail: 16 (raw) 58.503 (wgt)
+                     pass: 11 (raw) 40.2208 (wgt)
+                     fail: 10 (raw) 36.5644 (wgt)
                      └☑─deltaEtaGt3
-                        pass: 16 (raw) 58.503 (wgt)
+                        pass: 8 (raw) 29.2515 (wgt)
                         fail: 3 (raw) 10.9693 (wgt)
                         └☑─stgeq950
-                           pass: 0 (raw)
-                           fail: 16 (raw) 58.503 (wgt)
+                           pass: 3 (raw) 10.9693 (wgt)
+                           fail: 5 (raw) 18.2822 (wgt)
