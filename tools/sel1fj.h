@@ -211,13 +211,6 @@ bool ONEFATJETCUT::geq1FatjetsMassGt40(Nano& nt, Arbol& arbol, Cutflow& cutflow,
     return logic;
 }
 
-// Function to make checks on fatjet score
-bool ONEFATJETCUT::HbbScore(Nano& nt, Arbol& arbol, Cutflow& cutflow, double setscore=0.5) {
-    double hbbscore=cutflow.globals.getVal<double>("hbb") ;
-    bool logic = (hbbscore >= setscore);
-    return logic;
-}
-
 // Function to select events with at least four ak4 jets with Pt > 30; check overlap against leptons;
 // check overlap against fatjets
 // Select VBF jets
@@ -290,6 +283,12 @@ bool ONEFATJETCUT::geq4JetsPtGt30(Nano& nt, Arbol& arbol, Cutflow& cutflow, doub
     return pass;
 }
 
+// Function to make checks on fatjet score
+bool ONEFATJETCUT::HbbScore(Nano& nt, Arbol& arbol, Cutflow& cutflow, double setscore=0.5) {
+    double hbbscore=cutflow.globals.getVal<double>("hbb") ;
+    bool logic = (hbbscore >= setscore);
+    return logic;
+}
 
 // Function to calculate and select ST
 bool ONEFATJETCUT::stgeq950(Nano& nt, Arbol& arbol, Cutflow& cutflow) {

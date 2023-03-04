@@ -156,7 +156,8 @@ if __name__ == "__main__":
     # create hadded output directory
     # output_dir="/home/users/joytzphysics/Analysis/outputs/output_semiMerge_2oslep_2ak4_1ak8"
     # output_dir="/home/users/joytzphysics/Analysis/outputs/output_semiMerge_2oslep_2ak4_1ak8_v2"
-    output_dir="/home/users/joytzphysics/Analysis/outputs/output_semiMerge_1lep_1ak8_2ak4_v1"
+    # output_dir="/home/users/joytzphysics/Analysis/outputs/output_fullyMerge_1lep_1ak8_2ak4_v1"
+    output_dir="/home/users/joytzphysics/Analysis/outputs/output_fullyMerge_2oslep_2ak4_1ak8_v2"
     os.makedirs(output_dir, exist_ok=True)
 
     # Get Cutflow objects for background samples

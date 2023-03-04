@@ -65,16 +65,6 @@ int main(int argc, char** argv)
     );
     cutflow.insert(lep_sel, ak8_sel, Right);
 
-    // Hbb score selection
-    Cut* hbb_sel = new LambdaCut(
-        "HbbScore",
-        [&]()
-        {
-            return ONEFATJETCUT::HbbScore(nt, arbol, cutflow);
-        }
-    );
-    cutflow.insert(ak8_sel, hbb_sel, Right);
-
     // ak4 jets Selection
     Cut* ak4_sel = new LambdaCut(
         "geq4JetsPtGt30",
@@ -83,7 +73,17 @@ int main(int argc, char** argv)
             return ONEFATJETCUT::geq4JetsPtGt30(nt, arbol, cutflow);
         }
     );
-    cutflow.insert(hbb_sel, ak4_sel, Right);
+    cutflow.insert(ak8_sel, ak4_sel, Right);
+
+    // Hbb score selection
+    Cut* hbb_sel = new LambdaCut(
+        "HbbScore",
+        [&]()
+        {
+            return ONEFATJETCUT::HbbScore(nt, arbol, cutflow);
+        }
+    );
+    cutflow.insert(ak4_sel, hbb_sel, Right);
 
     // =========================================================================================
     // PRESELECTION
@@ -95,7 +95,7 @@ int main(int argc, char** argv)
             return mjjGt500(nt, arbol, cutflow);
         }
     );
-    cutflow.insert(ak4_sel, mjj_sel, Right);
+    cutflow.insert(hbb_sel, mjj_sel, Right);
 
     // Selection on VBF jet delta Eta
     Cut* deta_sel = new LambdaCut(
