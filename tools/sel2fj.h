@@ -103,7 +103,7 @@ bool TWOFATJETSCUT::geq2Fatjets(Nano& nt, Arbol& arbol, Cutflow& cutflow, double
     // Selected boosted V by xbb+xcc+xqq
     for (int j=0; j<fatjetindx.size(); j++) {
         int this_indx=fatjetindx.at(j);
-        double this_xvqq=(nt.FatJet_particleNetMD_Xbb()[this_indx]+nt.FatJet_particleNetMD_Xcc()[this_indx]+nt.FatJet_particleNetMD_Xqq()[this_indx])/(nt.FatJet_particleNetMD_Xbb()[this_indx]+nt.FatJet_particleNetMD_Xcc()[this_indx]+nt.FatJet_particleNetMD_Xqq()[this_indx]+nt.FatJet_particleNet_QCD()[this_indx]);
+        double this_xvqq=(nt.FatJet_particleNetMD_Xbb()[this_indx]+nt.FatJet_particleNetMD_Xcc()[this_indx]+nt.FatJet_particleNetMD_Xqq()[this_indx])/(nt.FatJet_particleNetMD_Xbb()[this_indx]+nt.FatJet_particleNetMD_Xcc()[this_indx]+nt.FatJet_particleNetMD_Xqq()[this_indx]+nt.FatJet_particleNetMD_QCD()[this_indx]);
         if (this_xvqq > highestxvqq) {
             xvqqindx=this_indx;
             highestxvqq=this_xvqq;
@@ -217,7 +217,7 @@ bool TWOFATJETSCUT::stgeq950(Nano& nt, Arbol& arbol, Cutflow& cutflow) {
     LorentzVector Hbb=cutflow.globals.getVal<LorentzVector>("hbbjet_p4");
     LorentzVector Vqq=cutflow.globals.getVal<LorentzVector>("xvqqjet_p4");
     LorentzVector Zll=cutflow.globals.getVal<LorentzVector>("ld_lep_p4")+cutflow.globals.getVal<LorentzVector>("sd_lep_p4");
-    cutflow.globals.setVal<double>("ST", Hbb.Pt()+Vqq.Pt()+Zll.Pt()+met);
+    cutflow.globals.setVal<double>("ST", Hbb.Pt()+Vqq.Pt()+Zll.Pt());
     bool logic=cutflow.globals.getVal<double>("ST")>=950;
     if (logic) {TWOFATJETSCUT::fillTree(nt, arbol, cutflow);}
     return logic;    
@@ -306,6 +306,6 @@ void TWOFATJETSCUT::fillTree(Nano& nt, Arbol& arbol, Cutflow& cutflow) {
     arbol.setLeaf<double>("met", met_pt);
     arbol.setLeaf<double>("mvvh", (V+H+Z).M());
     arbol.setLeaf<double>("lt", Z.Pt()+met_pt);
-    arbol.setLeaf<double>("st", Z.Pt()+H.Pt()+V.Pt()+met_pt);
+    arbol.setLeaf<double>("st", Z.Pt()+H.Pt()+V.Pt());
 }
 
