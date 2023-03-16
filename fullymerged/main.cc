@@ -78,6 +78,7 @@ int main(int argc, char** argv)
     // =========================================================================================
     // PRESELECTION
     // Hbb score selection
+    /*
     Cut* hbb_sel = new LambdaCut(
         "hbbScore",
         [&]()
@@ -126,7 +127,7 @@ int main(int argc, char** argv)
         }
     );
     cutflow.insert(deta_sel, ST_sel, Right); 
-
+    */
 
     // Intialize progress bar
     tqdm bar;
@@ -154,13 +155,8 @@ int main(int argc, char** argv)
                 cutflow.globals.resetVars();
                 // Run cutflow
                 nt.GetEntry(entry);
-                bool all_passed=cutflow.run("stgeq950");
+                bool all_passed=cutflow.run("geq2JetsPtGt30");
                 if (all_passed) { arbol.fill(); }
-
-                /*
-                bool dummycut1_passed = cutflow.run("DummyCut1");
-                if (dummycut1_passed) { arbol.fill(); }
-                */
                 
                 // Update progress bar
                 bar.progress(looper.n_events_processed, looper.n_events_total);
