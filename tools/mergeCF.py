@@ -9,53 +9,27 @@ from subprocess import Popen, PIPE
 from cutflow import Cutflow, CutflowCollection
 
 BKG_SAMPLE_MAP = {
-    "EWKWLep": {
-        "20UL16NanoAODv9*":["EWKW*WToLNu*"],
-        "20UL16NanoAODAPVv9*":["EWKW*WToLNu*"],
-        "20UL17NanoAODv9*":["EWKW*WToLNu*"],
-        "20UL18NanoAODv9*":["EWKW*WToLNu*"],
+    "DYJets": {
+        "20UL16NanoAODv9*":["DY*"],
+        "20UL16NanoAODAPVv9*":["DY*"],
+        "20UL17NanoAODv9*":["DY*"],
+        "20UL18NanoAODv9*":["DY*"],
     },
-    "Bosons": {
-        "20UL16NanoAODv9*":["WW*", "WZ*", "ZZ*", "DY*", "EWKW*WToQQ*", "EWKZ*ZToNuNu*", "EWKZ*ZToLL*", "EWKZ*ZToQQ*"],
-        "20UL16NanoAODAPVv9*":["WW*", "WZ*", "ZZ*", "DY*", "EWKW*WToQQ*", "EWKZ*ZToNuNu*", "EWKZ*ZToLL*", "EWKZ*ZToQQ*"],
-        "20UL17NanoAODv9*":["WW*", "WZ*", "ZZ*", "DY*", "EWKW*WToQQ*", "EWKZ*ZToNuNu*", "EWKZ*ZToLL*", "EWKZ*ZToQQ*"],
-        "20UL18NanoAODv9*":["WW*", "WZ*", "ZZ*", "DY*", "EWKW*WToQQ*", "EWKZ*ZToNuNu*", "EWKZ*ZToLL*", "EWKZ*ZToQQ*"],
-    },
-    "SingleTop": {
-        "20UL16NanoAODv9*":["ST*"],
-        "20UL16NanoAODAPVv9*":["ST*"],
-        "20UL17NanoAODv9*":["ST*"],
-        "20UL18NanoAODv9*":["ST*"],
-    },
-    "ttdilep": {
-        "20UL16NanoAODv9*":["TTTo2L*"],
-        "20UL16NanoAODAPVv9*":["TTTo2L*"],
-        "20UL17NanoAODv9*":["TTTo2L*"],
-        "20UL18NanoAODv9*":["TTTo2L*"],
-    },
-    "ttsemilep": {
-        "20UL16NanoAODv9*":["TTToSemiLep*"],
-        "20UL16NanoAODAPVv9*":["TTToSemiLep*"],
-        "20UL17NanoAODv9*":["TTToSemiLep*"],
-        "20UL18NanoAODv9*":["TTToSemiLep*"],
+    "Others": {
+        "20UL16NanoAODv9*":["WW*", "WZ*", "ZZ*", "EWKW*WToQQ*", "EWKZ*ZToNuNu*", "EWKZ*ZToLL*", "EWKZ*ZToQQ*", "EWKW*WToLNu*", 
+                            "TTToSemiLep*", "ST*", "VHToNonbb*", "WminusH*", "WplusH*", "ZH_HToBB*", "ggZH_HToBB*", "WJets*"],
+        "20UL16NanoAODAPVv9*":["WW*", "WZ*", "ZZ*", "EWKW*WToQQ*", "EWKZ*ZToNuNu*", "EWKZ*ZToLL*", "EWKZ*ZToQQ*", "EWKW*WToLNu*",
+                               "TTToSemiLep*", "ST*", "VHToNonbb*", "WminusH*", "WplusH*", "ZH_HToBB*", "ggZH_HToBB*", "WJets*"],
+        "20UL17NanoAODv9*":["WW*", "WZ*", "ZZ*", "EWKW*WToQQ*", "EWKZ*ZToNuNu*", "EWKZ*ZToLL*", "EWKZ*ZToQQ*", "EWKW*WToLNu*", 
+                            "TTToSemiLep*", "ST*", "VHToNonbb*", "WminusH*", "WplusH*", "ZH_HToBB*", "ggZH_HToBB*", "WJets*"],
+        "20UL18NanoAODv9*":["WW*", "WZ*", "ZZ*", "EWKW*WToQQ*", "EWKZ*ZToNuNu*", "EWKZ*ZToLL*", "EWKZ*ZToQQ*", "EWKW*WToLNu*", 
+                            "TTToSemiLep*", "ST*", "VHToNonbb*", "WminusH*", "WplusH*", "ZH_HToBB*", "ggZH_HToBB*", "WJets*"],
     },
     "TTX": {
-        "20UL16NanoAODv9*":["ttH*", "TTW*", "TTZ*", "TTbb*", "TTToHadronic*"],
-        "20UL16NanoAODAPVv9*":["ttH*", "TTW*", "TTZ*", "TTbb*", "TTToHadronic*"],
-        "20UL17NanoAODv9*":["ttH*", "TTW*", "TTZ*", "TTbb*", "TTToHadronic*"],
-        "20UL18NanoAODv9*":["ttH*", "TTW*", "TTZ*", "TTbb*", "TTToHadronic*"],
-    },
-    "VH": {
-        "20UL16NanoAODv9*": ["VHToNonbb*", "WminusH*", "WplusH*", "ZH_HToBB*", "ggZH_HToBB*"],
-        "20UL16NanoAODAPVv9*": ["VHToNonbb*", "WminusH*", "WplusH*", "ZH_HToBB*", "ggZH_HToBB*"],
-        "20UL17NanoAODv9*": ["VHToNonbb*", "WminusH*", "WplusH*", "ZH_HToBB*", "ggZH_HToBB*"],
-        "20UL18NanoAODv9*": ["VHToNonbb*", "WminusH*", "WplusH*", "ZH_HToBB*", "ggZH_HToBB*"],
-    },
-    "WJets": {
-        "20UL16NanoAODv9*": ["WJets*"],
-        "20UL16NanoAODAPVv9*": ["WJets*"],
-        "20UL17NanoAODv9*": ["WJets*"],
-        "20UL18NanoAODv9*": ["WJets*"],
+        "20UL16NanoAODv9*":["ttH*", "TTW*", "TTZ*", "TTbb*", "TTToHadronic*", "TTTo2L*"],
+        "20UL16NanoAODAPVv9*":["ttH*", "TTW*", "TTZ*", "TTbb*", "TTToHadronic*", "TTTo2L*"],
+        "20UL17NanoAODv9*":["ttH*", "TTW*", "TTZ*", "TTbb*", "TTToHadronic*", "TTTo2L*"],
+        "20UL18NanoAODv9*":["ttH*", "TTW*", "TTZ*", "TTbb*", "TTToHadronic*", "TTTo2L*"],
     },
 }
 
@@ -168,7 +142,7 @@ if __name__ == "__main__":
     cutflows_sig= merge(output_dir, SIG_SAMPLE_MAP_2)
     cutflows += cutflows_sig
     cutflows["TotalSig"] = cutflows_sig.sum()
-    cutflows.reorder(["WWH","WZH","OSWWH", "ZZH", "TotalSig", "TotalBkg", "VH", "EWKWLep", "Bosons", "WJets", "SingleTop", "TTX", "ttsemilep", "ttdilep"])
+    cutflows.reorder(["WWH","WZH","OSWWH", "ZZH", "TotalSig", "TotalBkg", "DYJets", "TTX", "Others"])
     # cutflows.reorder(["WWDilep","WZHDilep","OSWWHDilep", "ZZHDilep","OSWWH_C2V_3", "WZH_C2V_3", "ZZH_C2V_3"])
 
     # Write .cflow files
