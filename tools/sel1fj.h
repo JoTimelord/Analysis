@@ -16,7 +16,7 @@ namespace ONEFATJETCUT{
     void initializeCutflow(Cutflow& cutflow_); // Holds the "unflattened" variables such as 'LorentzVector' of electrons
     void selectWjets(int& i, int& j, int VBF1, int VBF2, std::vector<LorentzVector> jets);
     void fillTree(Nano& nt, Arbol& arbol, Cutflow& cutflow);
-    bool geq1FatjetsMassGt40(Nano& nt, Arbol& arbol, Cutflow& cutflow, double sdmass, double pt, double deta);
+    bool eq1FatjetMassGt40(Nano& nt, Arbol& arbol, Cutflow& cutflow, double sdmass, double pt, double deta);
     bool HbbScore(Nano& nt, Arbol& arbol, Cutflow& cutflow, double setscore);
     bool geq4JetsPtGt30(Nano& nt, Arbol& arbol, Cutflow& cutflow, double pt);
     bool stgeq950(Nano& nt, Arbol& arbol, Cutflow& cutflow);
@@ -64,26 +64,54 @@ void ONEFATJETCUT::initializeArbol(Arbol& arbol_) {
     arbol_.newBranch<double>("lhe_mjj", -999);
     arbol_.newBranch<double>("lhe_detajj", -999);
     // Reconstructed variables
-    arbol_.newBranch<LorentzVector>("ld_lep_LV", {-999,-999,-999,-999});
-    arbol_.newBranch<LorentzVector>("sd_lep_LV", {-999,-999,-999,-999});
+    // arbol_.newBranch<LorentzVector>("ld_lep_LV", {-999,-999,-999,-999});
+    arbol_.newBranch<double>("ld_lep_pt", -999);
+    arbol_.newBranch<double>("ld_lep_mass", -999);
+    arbol_.newBranch<double>("ld_lep_eta", -999);
+    arbol_.newBranch<double>("ld_lep_phi", -999);
+    // arbol_.newBranch<LorentzVector>("sd_lep_LV", {-999,-999,-999,-999});    
+    arbol_.newBranch<double>("sd_lep_pt", -999);
+    arbol_.newBranch<double>("sd_lep_mass", -999);
+    arbol_.newBranch<double>("sd_lep_eta", -999);
+    arbol_.newBranch<double>("sd_lep_phi", -999);
     arbol_.newBranch<int>("ld_lep_ID", -999); // pdgid for leading lepton
     arbol_.newBranch<int>("sd_lep_ID", -999);
     arbol_.newBranch<double>("mll", -999.0);
     arbol_.newBranch<double>("ptll", -999.0);
     arbol_.newBranch<double>("dRll", -999.0);
     arbol_.newBranch<int>("n_ak8", -999);
-    arbol_.newBranch<LorentzVector>("hbb_LV", {-999,-999,-999,-999});
+    // arbol_.newBranch<LorentzVector>("hbb_LV", {-999,-999,-999,-999});
+    arbol_.newBranch<double>("hbb_pt", -999);
+    arbol_.newBranch<double>("hbb_mass", -999);
+    arbol_.newBranch<double>("hbb_eta", -999);
+    arbol_.newBranch<double>("hbb_phi", -999);
     arbol_.newBranch<double>("hbb_score", -999);
     arbol_.newBranch<double>("xbb_score", -999);
     arbol_.newBranch<double>("hbb_pnetmass", -999);
     arbol_.newBranch<double>("hbb_sdmass", -999);
-    arbol_.newBranch<LorentzVector>("ld_vbfjet_LV", {-999,-999,-999,-999});
-    arbol_.newBranch<LorentzVector>("sd_vbfjet_LV", {-999,-999,-999,-999});
+    // arbol_.newBranch<LorentzVector>("ld_vbfjet_LV", {-999,-999,-999,-999});
+    arbol_.newBranch<double>("ld_vbfjet_pt", -999);
+    arbol_.newBranch<double>("ld_vbfjet_mass", -999);
+    arbol_.newBranch<double>("ld_vbfjet_eta", -999);
+    arbol_.newBranch<double>("ld_vbfjet_phi", -999);
+    // arbol_.newBranch<LorentzVector>("sd_vbfjet_LV", {-999,-999,-999,-999});
+    arbol_.newBranch<double>("sd_vbfjet_pt", -999);
+    arbol_.newBranch<double>("sd_vbfjet_mass", -999);
+    arbol_.newBranch<double>("sd_vbfjet_eta", -999);
+    arbol_.newBranch<double>("sd_vbfjet_phi", -999);
     arbol_.newBranch<double>("mjj", -999.0);
     arbol_.newBranch<double>("detajj", -999.0);
     arbol_.newBranch<double>("dRjj", -999.0);
-    arbol_.newBranch<LorentzVector>("ld_wjet_LV", {-999,-999,-999,-999});
-    arbol_.newBranch<LorentzVector>("sd_wjet_LV", {-999,-999,-999,-999});
+    // arbol_.newBranch<LorentzVector>("ld_wjet_LV", {-999,-999,-999,-999});
+    arbol_.newBranch<double>("ld_wjet_pt", -999);
+    arbol_.newBranch<double>("ld_wjet_mass", -999);
+    arbol_.newBranch<double>("ld_wjet_eta", -999);
+    arbol_.newBranch<double>("ld_wjet_phi", -999);
+    // arbol_.newBranch<LorentzVector>("sd_wjet_LV", {-999,-999,-999,-999});
+    arbol_.newBranch<double>("sd_wjet_pt", -999);
+    arbol_.newBranch<double>("sd_wjet_mass", -999);
+    arbol_.newBranch<double>("sd_wjet_eta", -999);
+    arbol_.newBranch<double>("sd_wjet_phi", -999);
     arbol_.newBranch<double>("mqq", -999.0);
     arbol_.newBranch<double>("dRqq", -999.0);
     arbol_.newBranch<double>("met", -999.0);
@@ -118,8 +146,16 @@ void ONEFATJETCUT::fillTree(Nano& nt, Arbol& arbol, Cutflow& cutflow) {
     // Leptons
     LorentzVector ldlep_p4=cutflow.globals.getVal<LorentzVector>("ld_lep_p4");
     LorentzVector sdlep_p4=cutflow.globals.getVal<LorentzVector>("sd_lep_p4");
-    arbol.setLeaf<LorentzVector>("ld_lep_LV",ldlep_p4);
-    arbol.setLeaf<LorentzVector>("sd_lep_LV",sdlep_p4);
+    // arbol.setLeaf<LorentzVector>("ld_lep_LV",ldlep_p4);
+    arbol.setLeaf<double>("ld_lep_mass", ldlep_p4.M());
+    arbol.setLeaf<double>("ld_lep_pt", ldlep_p4.Pt());
+    arbol.setLeaf<double>("ld_lep_eta", ldlep_p4.Eta());
+    arbol.setLeaf<double>("ld_lep_phi", ldlep_p4.Phi());
+    // arbol.setLeaf<LorentzVector>("sd_lep_LV",sdlep_p4);
+    arbol.setLeaf<double>("sd_lep_mass", sdlep_p4.M());
+    arbol.setLeaf<double>("sd_lep_pt", sdlep_p4.Pt());
+    arbol.setLeaf<double>("sd_lep_eta", sdlep_p4.Eta());
+    arbol.setLeaf<double>("sd_lep_phi", sdlep_p4.Phi());
     arbol.setLeaf<int>("ld_lep_ID",cutflow.globals.getVal<int>("ld_lep_pdgid"));
     arbol.setLeaf<int>("sd_lep_ID",cutflow.globals.getVal<int>("sd_lep_pdgid"));
     arbol.setLeaf<double>("mll",(ldlep_p4+sdlep_p4).M());
@@ -129,7 +165,11 @@ void ONEFATJETCUT::fillTree(Nano& nt, Arbol& arbol, Cutflow& cutflow) {
     arbol.setLeaf<int>("n_ak8", cutflow.globals.getVal<int>("n_ak8"));
     LorentzVector H=cutflow.globals.getVal<LorentzVector>("hbbjet_p4");
     arbol.setLeaf<double>("hbb_score", cutflow.globals.getVal<double>("hbb"));
-    arbol.setLeaf<LorentzVector>("hbb_LV", H);
+    // arbol.setLeaf<LorentzVector>("hbb_LV", H);
+    arbol.setLeaf<double>("hbb_mass", H.M());
+    arbol.setLeaf<double>("hbb_pt", H.Pt());
+    arbol.setLeaf<double>("hbb_eta", H.Eta());
+    arbol.setLeaf<double>("hbb_phi", H.Phi());
     arbol.setLeaf<double>("xbb_score", cutflow.globals.getVal<double>("xbb"));
     arbol.setLeaf<double>("hbb_pnetmass", cutflow.globals.getVal<double>("pn_mass"));
     arbol.setLeaf<double>("hbb_sdmass", cutflow.globals.getVal<double>("sd_mass"));
@@ -139,10 +179,26 @@ void ONEFATJETCUT::fillTree(Nano& nt, Arbol& arbol, Cutflow& cutflow) {
     LorentzVector sdwqqLV=cutflow.globals.getVal<LorentzVector>("sd_wjet_p4");
     LorentzVector ldvbfLV=cutflow.globals.getVal<LorentzVector>("ld_vbf_p4");
     LorentzVector sdvbfLV=cutflow.globals.getVal<LorentzVector>("sd_vbf_p4");
-    arbol.setLeaf<LorentzVector>("ld_vbfjet_LV",ldvbfLV);
-    arbol.setLeaf<LorentzVector>("sd_vbfjet_LV",sdvbfLV);
-    arbol.setLeaf<LorentzVector>("ld_wjet_LV",ldwqqLV);
-    arbol.setLeaf<LorentzVector>("sd_wjet_LV",sdwqqLV);
+    // arbol.setLeaf<LorentzVector>("ld_vbfjet_LV",ldvbfLV);
+    arbol.setLeaf<double>("ld_vbfjet_mass", ldvbfLV.M());
+    arbol.setLeaf<double>("ld_vbfjet_pt", ldvbfLV.Pt());
+    arbol.setLeaf<double>("ld_vbfjet_eta", ldvbfLV.Eta());
+    arbol.setLeaf<double>("ld_vbfjet_phi", ldvbfLV.Phi());
+    // arbol.setLeaf<LorentzVector>("sd_vbfjet_LV",sdvbfLV);
+    arbol.setLeaf<double>("sd_vbfjet_mass", sdvbfLV.M());
+    arbol.setLeaf<double>("sd_vbfjet_pt", sdvbfLV.Pt());
+    arbol.setLeaf<double>("sd_vbfjet_eta", sdvbfLV.Eta());
+    arbol.setLeaf<double>("sd_vbfjet_phi", sdvbfLV.Phi());
+    // arbol.setLeaf<LorentzVector>("ld_wjet_LV",ldwqqLV);
+    arbol.setLeaf<double>("ld_wjet_mass", ldwqqLV.M());
+    arbol.setLeaf<double>("ld_wjet_pt", ldwqqLV.Pt());
+    arbol.setLeaf<double>("ld_wjet_eta", ldwqqLV.Eta());
+    arbol.setLeaf<double>("ld_wjet_phi", ldwqqLV.Phi());
+    // arbol.setLeaf<LorentzVector>("sd_wjet_LV",sdwqqLV);
+    arbol.setLeaf<double>("sd_wjet_mass", sdwqqLV.M());
+    arbol.setLeaf<double>("sd_wjet_pt", sdwqqLV.Pt());
+    arbol.setLeaf<double>("sd_wjet_eta", sdwqqLV.Eta());
+    arbol.setLeaf<double>("sd_wjet_phi", sdwqqLV.Phi());
     arbol.setLeaf<double>("mjj", (ldvbfLV+sdvbfLV).M());
     arbol.setLeaf<double>("detajj", TMath::Abs(ldvbfLV.Eta()-sdvbfLV.Eta()));
     arbol.setLeaf<double>("dRjj",fabs(ROOT::Math::VectorUtil::DeltaR(ldvbfLV,sdvbfLV)));
@@ -161,7 +217,7 @@ void ONEFATJETCUT::fillTree(Nano& nt, Arbol& arbol, Cutflow& cutflow) {
 
 // Function to select events with at least one fatjet (boosted Higgs); check overlap against leptons
 // Requirement on fatjet: softdropmass larger than 40, pt greater than 250, |eta|<2.5, fatjetID>0
-bool ONEFATJETCUT::geq1FatjetsMassGt40(Nano& nt, Arbol& arbol, Cutflow& cutflow, double sdmass=40, double pt=250, double deta=2.5) {
+bool ONEFATJETCUT::eq1FatjetMassGt40(Nano& nt, Arbol& arbol, Cutflow& cutflow, double sdmass=40, double pt=250, double deta=2.5) {
     int n_fatjet=0;
     double highesthbb=-999.999; // mass-correlated score
     double highestxbb=-999.999; // mass-decorrelated score
@@ -198,7 +254,7 @@ bool ONEFATJETCUT::geq1FatjetsMassGt40(Nano& nt, Arbol& arbol, Cutflow& cutflow,
         }
     }
     // Select Logic: Pass events with at least one fatjets
-    bool logic = (n_fatjet >= 1);
+    bool logic = (n_fatjet == 1);
     if (logic) {
         cutflow.globals.setVal<LorentzVector>("hbbjet_p4", nt.FatJet_p4()[hbbindx]);
         cutflow.globals.setVal<LorentzVector>("xbbjet_p4", nt.FatJet_p4()[xbbindx]);
@@ -279,6 +335,11 @@ bool ONEFATJETCUT::geq4JetsPtGt30(Nano& nt, Arbol& arbol, Cutflow& cutflow, doub
         cutflow.globals.setVal<double>("met_pt", nt.MET_pt());
         cutflow.globals.setVal<double>("mjj", (jets.at(VBF1) + jets.at(VBF2)).M());
         cutflow.globals.setVal<double>("detajj", fabs((jets.at(VBF1)).Eta()-(jets.at(VBF2)).Eta()));
+        LorentzVector Hbb=cutflow.globals.getVal<LorentzVector>("hbbjet_p4");
+        LorentzVector wjj=cutflow.globals.getVal<LorentzVector>("ld_wjet_p4")+cutflow.globals.getVal<LorentzVector>("sd_wjet_p4");
+        LorentzVector zll=cutflow.globals.getVal<LorentzVector>("ld_lep_p4")+cutflow.globals.getVal<LorentzVector>("sd_lep_p4");
+        cutflow.globals.setVal<double>("ST", Hbb.Pt()+wjj.Pt()+zll.Pt());
+        ONEFATJETCUT::fillTree(nt, arbol, cutflow);
     }
     return pass;
 }
@@ -292,12 +353,8 @@ bool ONEFATJETCUT::HbbScore(Nano& nt, Arbol& arbol, Cutflow& cutflow, double set
 
 // Function to calculate and select ST
 bool ONEFATJETCUT::stgeq950(Nano& nt, Arbol& arbol, Cutflow& cutflow) {
-    LorentzVector Hbb=cutflow.globals.getVal<LorentzVector>("hbbjet_p4");
-    LorentzVector wjj=cutflow.globals.getVal<LorentzVector>("ld_wjet_p4")+cutflow.globals.getVal<LorentzVector>("sd_wjet_p4");
-    LorentzVector zll=cutflow.globals.getVal<LorentzVector>("ld_lep_p4")+cutflow.globals.getVal<LorentzVector>("sd_lep_p4");
-    cutflow.globals.setVal<double>("ST", Hbb.Pt()+wjj.Pt()+zll.Pt());
     bool logic=cutflow.globals.getVal<double>("ST")>=950;
-    if (logic) {ONEFATJETCUT::fillTree(nt, arbol, cutflow);}
+    // if (logic) {ONEFATJETCUT::fillTree(nt, arbol, cutflow);}
     return logic; 
 }
 
