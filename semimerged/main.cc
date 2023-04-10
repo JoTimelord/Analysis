@@ -57,10 +57,10 @@ int main(int argc, char** argv)
 
     // Fatjet Selection
     Cut* ak8_sel = new LambdaCut(
-        "geq1FatjetsMassGt40",
+        "eq1FatjetMassGt40",
         [&]()
         {
-            return ONEFATJETCUT::geq1FatjetsMassGt40(nt, arbol, cutflow);
+            return ONEFATJETCUT::eq1FatjetMassGt40(nt, arbol, cutflow);
         }
     );
     cutflow.insert(lep_sel, ak8_sel, Right);
@@ -75,6 +75,7 @@ int main(int argc, char** argv)
     );
     cutflow.insert(ak8_sel, ak4_sel, Right);
 
+    /*
     // Hbb score selection
     Cut* hbb_sel = new LambdaCut(
         "HbbScore",
@@ -116,7 +117,7 @@ int main(int argc, char** argv)
         }
     );
     cutflow.insert(deta_sel, ST_sel, Right); 
-
+    */
 
     // Intialize progress bar
     tqdm bar;
@@ -144,13 +145,8 @@ int main(int argc, char** argv)
                 cutflow.globals.resetVars();
                 // Run cutflow
                 nt.GetEntry(entry);
-                bool all_passed=cutflow.run("stgeq950");
+                bool all_passed=cutflow.run("geq4JetsPtGt30");
                 if (all_passed) { arbol.fill(); }
-
-                /*
-                bool dummycut1_passed = cutflow.run("DummyCut1");
-                if (dummycut1_passed) { arbol.fill(); }
-                */
                 
                 // Update progress bar
                 bar.progress(looper.n_events_processed, looper.n_events_total);

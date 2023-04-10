@@ -1,0 +1,16 @@
+Cutflow
+└☑─BaseCut
+   pass: 2213 (raw) 26.0698 (wgt)
+   fail: 0 (raw)
+   └☑─SelectLHEVariables
+      pass: 2213 (raw) 26.0698 (wgt)
+      fail: 0 (raw)
+      └☑─eq2OSLeptonsPtGt30
+         pass: 896 (raw) 10.5552 (wgt)
+         fail: 1317 (raw) 15.5147 (wgt)
+         └☑─eq1FatjetMassGt40
+            pass: 649 (raw) 7.64543 (wgt)
+            fail: 247 (raw) 2.90974 (wgt)
+            └☑─geq4JetsPtGt30
+               pass: 20 (raw) 0.235606 (wgt)
+               fail: 629 (raw) 7.40982 (wgt)

@@ -1,0 +1,5 @@
+BaseCut,527,79.5881,0,0,null,null,SelectLHEVariables
+SelectLHEVariables,527,79.5881,0,0,BaseCut,null,eq2OSLeptonsPtGt30
+eq2OSLeptonsPtGt30,230,34.7348,297,44.8532,SelectLHEVariables,null,geq2Fatjets
+geq2Fatjets,25,3.77553,205,30.9593,eq2OSLeptonsPtGt30,null,geq2JetsPtGt30
+geq2JetsPtGt30,12,1.81225,13,1.96327,geq2Fatjets,null,null
