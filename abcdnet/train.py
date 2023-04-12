@@ -186,9 +186,14 @@ if __name__ == "__main__":
     print_title("Initialization")
     torch.manual_seed(config.train.seed)
     print(f"seed: {config.train.seed}")
-    use_cuda = torch.cuda.is_available()
-    device = torch.device("cuda" if use_cuda else "cpu")
-    print(f"use_cuda: {use_cuda}")
+    device = (
+        "cuda"
+        if torch.cuda.is_available()
+        else "mps"
+        if torch.backends.mps.is_available()
+        else "cpu"
+    )
+    print(f"Using {device} device")
 
     # Load model
     Model = getattr(models, config.model.name)

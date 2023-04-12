@@ -1,35 +1,39 @@
 {
-    "basedir": "/blue/p.chang/jguiang/data/vbsvvh",
+    "basedir": "/Users/yuntongzhou/Desktop/Analysis/abcdnet",
     "name": "ABCDNet",
     "model": {
         "name": "NeuralNetwork",
-        "n_hidden_layers": 3,
-        "hidden_size": 64
+        "n_hidden_layers": 0,
+        "hidden_size": 32
     },
     "ingress": {
-        "input_dir": "output_pnetfix/Run2",
+        "input_dir": "/Users/yuntongzhou/Desktop/Analysis/abcdnet/haddedOutputs",
         "ttree_name": "tree", 
         "features": [
-            "hbbfatjet_pt",
-            "hbbfatjet_eta",
-            "hbbfatjet_phi",
-            "hbbfatjet_mass",
-            "ld_vqqfatjet_pt",
-            "ld_vqqfatjet_eta",
-            "ld_vqqfatjet_phi",
-            "ld_vqqfatjet_mass",
-            "tr_vqqfatjet_pt",
-            "tr_vqqfatjet_eta",
-            "tr_vqqfatjet_phi",
-            "tr_vqqfatjet_mass",
-            "M_jj"
+            "hbb_pt",
+            "hbb_eta",
+            "hbb_phi",
+            "hbb_sdmass",
+            "ld_vbfjet_phi",
+            "sd_vbfjet_phi",
+            "ld_vbfjet_pt",
+            "sd_vbfjet_pt",
+            "ld_vbfjet_mass",
+            "sd_vbfjet_mass",
+            "ld_lep_pt",
+            "sd_lep_pt",
+            "ld_lep_eta",
+            "sd_lep_eta",
+            "ld_lep_mass",
+            "sd_lep_mass",
+            "ld_lep_phi",
+            "sd_lep_phi",
+            "mjj"
         ],
         "weights": [
-            "xsec_sf",
-            "pu_sf",
-            "prefire_sf"
+            "xsec_sf"
         ],
-        "disco_target": "abs_deta_jj"
+        "disco_target": "detajj"
     },
     "train": {
         "train_frac": 0.7,
@@ -45,6 +49,6 @@
             "step_size": 25,
             "gamma": 0.7
         },
-        "disco_lambda": 0
+        "disco_lambda": 0.5
     }
 }

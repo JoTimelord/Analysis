@@ -34,7 +34,7 @@ def ingress(config):
             n_events = features.size()[0]
 
             # Set label
-            if "VBSVVH" in root_file:
+            if "VBS" in root_file:
                 labels = torch.ones(n_events)
             else:
                 labels = torch.zeros(n_events)
