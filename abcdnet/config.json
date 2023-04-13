@@ -1,39 +1,55 @@
 {
-    "basedir": "/Users/yuntongzhou/Desktop/Analysis/abcdnet",
-    "name": "ABCDNet",
+    "basedir": "/home/users/joytzphysics/Analysis/abcdnet",
+    "name": "ABCDNet_betterNorms",
     "model": {
         "name": "NeuralNetwork",
-        "n_hidden_layers": 0,
-        "hidden_size": 32
+        "n_hidden_layers": 3,
+        "hidden_size": 128
     },
     "ingress": {
-        "input_dir": "/Users/yuntongzhou/Desktop/Analysis/abcdnet/haddedOutputs",
+        "input_dir": "/home/users/joytzphysics/Analysis/abcdnet/test",
         "ttree_name": "tree", 
         "features": [
             "hbb_pt",
             "hbb_eta",
             "hbb_phi",
-            "hbb_sdmass",
+            "hbb_mass",
             "ld_vbfjet_phi",
-            "sd_vbfjet_phi",
+            "ld_vbfjet_eta",
+            "ld_vbfjet_mass",
             "ld_vbfjet_pt",
             "sd_vbfjet_pt",
-            "ld_vbfjet_mass",
+            "sd_vbfjet_eta",
+            "sd_vbfjet_phi",
             "sd_vbfjet_mass",
-            "ld_lep_pt",
-            "sd_lep_pt",
+            "ld_lep_phi",
             "ld_lep_eta",
-            "sd_lep_eta",
             "ld_lep_mass",
-            "sd_lep_mass",
+            "ld_lep_pt",
             "ld_lep_phi",
             "sd_lep_phi",
+            "sd_lep_eta",
+            "sd_lep_mass",
+            "sd_lep_pt",
             "mjj"
         ],
+        "transforms": {
+            "hbb_pt": "log",
+            "hbb_mass": "rescale",
+            "ld_vbfjet_pt": "log",
+            "sd_vbfjet_pt": "log",
+            "sd_lep_pt": "log",
+            "ld_lep_pt": "log",
+            "ld_vbfjet_mass": "rescale",
+            "sd_vbfjet_mass": "rescale",
+            "ld_lep_mass": "rescale",
+            "sd_lep_mass": "rescale",
+            "mjj": "rescale"
+        },
         "weights": [
             "xsec_sf"
         ],
-        "disco_target": "detajj"
+        "disco_target": "x0"
     },
     "train": {
         "train_frac": 0.7,
@@ -49,6 +65,6 @@
             "step_size": 25,
             "gamma": 0.7
         },
-        "disco_lambda": 0.5
+        "disco_lambda": 1000
     }
 }

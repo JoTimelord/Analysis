@@ -28,7 +28,7 @@ class OutputVBS:
 class OutputCSV(OutputVBS):
     def __init__(self, file_name):
         super().__init__(file_name)
-        self.__f = open(outname, "w")
+        self.__f = open(file_name, "w")
 
     def write(self, idx, truth, score):
         self.__f.write(f"{idx},{int(truth)},{float(score)}\n")
@@ -94,14 +94,14 @@ if __name__ == "__main__":
     )
     args = parser.parse_args()
 
-    config = VBSConfig.from_json("config.json")
+    config = VBSConfig.from_json("config_test.json")
     models_dir = f"{config.basedir}/trained_models"
     infers_dir = f"{config.basedir}/inferences"
     os.makedirs(infers_dir, exist_ok=True)
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-    saved_model = f"{models_dir}/{train.get_outfile(config, epoch=args.epoch, tag='model')}"
+    saved_model = f"{train.get_outfile(config, epoch=args.epoch, tag='model')}"
     Model = getattr(models, config.model.name)
     model = Model.from_config(config).to(device)
     model.load_state_dict(torch.load(saved_model))
@@ -118,12 +118,12 @@ if __name__ == "__main__":
     else:
         csv_name = train.get_outfile(config, epoch=args.epoch, tag="REPACE").replace('.pt', '.csv')
         # Write testing inferences
-        test_data = DisCoDataset.from_file(f"{models_dir}/{tran.get_outfile(config, tag='test_dataset')}")
+        test_data = DisCoDataset.from_file(f"{train.get_outfile(config, tag='test_dataset')}")
         test_loader = DataLoader(test_data)
         test_csv = f"{infers_dir}/{csv_name.replace('REPLACE', 'test')}"
         times = infer(model, device, test_loader, OutputCSV(test_csv))
         # Write training inferences
-        train_data = DisCoDataset.from_file(f"{models_dir}/{train.get_outfile(config, tag='train_dataset')}")
+        train_data = DisCoDataset.from_file(f"{train.get_outfile(config, tag='train_dataset')}")
         train_loader = DataLoader(train_data)
         train_csv = f"{infers_dir}/{csv_name.replace('REPLACE', 'train')}"
         times += infer(model, device, test_loader, OutputCSV(train_csv))
