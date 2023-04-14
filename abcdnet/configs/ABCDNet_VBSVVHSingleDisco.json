@@ -8,6 +8,7 @@
     },
     "ingress": {
         "input_dir": "/home/users/joytzphysics/Analysis/abcdnet/haddedOutputs",
+        "signal_file": "VBSVVH.root",
         "ttree_name": "tree", 
         "features": [
             "hbb_pt",

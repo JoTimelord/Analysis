@@ -1,5 +1,5 @@
 {
-    "basedir": "/blue/p.chang/jguiang/data/vbsvvh",
+    "basedir": "/home/users/joytzphysics/Analysis/abcdnet",
     "name": "Gaussians3D_noDisCo",
     "model": {
         "name": "NeuralNetwork",
@@ -7,7 +7,7 @@
         "hidden_size": 128
     },
     "ingress": {
-        "input_dir": "gaussians",
+        "input_dir": "/home/users/joytzphysics/Analysis/abcdnet/Gaussian",
         "signal_file": "sig.root",
         "ttree_name": "tree", 
         "features": ["X1", "X2"],
