@@ -15,7 +15,7 @@ from utils import VBSConfig, print_title
 from losses import DisCoLoss
 from datasets import DisCoDataset
 
-def get_outfile(config, epoch=None, tag=None, msg=None):
+def get_outfile(config, epoch=None, tag=None, ext="pt", msg=None):
     outfile = (
         f"{config.basedir}/trained_models/{config.name}"
         + f"_model{config.model.name}"
@@ -30,7 +30,7 @@ def get_outfile(config, epoch=None, tag=None, msg=None):
     if tag:
         outfile += f"_{tag}"
 
-    outfile += ".pt"
+    outfile += f".{ext}"
     if msg:
         print(msg.format(outfile))
 
@@ -163,6 +163,7 @@ def test(model, device, test_loader, criterion, thresh=0.5):
 if __name__ == "__main__":
     # CLI
     parser = argparse.ArgumentParser(description="Train GNN")
+    parser.add_argument("config_json", type=str, help="config JSON")
     parser.add_argument("-v", "--verbose", action="store_true", help="toggle verbosity")
     parser.add_argument(
         "--no_cuda", action="store_true", default=False,
@@ -178,7 +179,7 @@ if __name__ == "__main__":
     )
     args = parser.parse_args()
 
-    config = VBSConfig.from_json("config_test.json")
+    config = VBSConfig.from_json(args.config_json)
     models_dir = f"{config.basedir}/trained_models"
     os.makedirs(models_dir, exist_ok=True)
 
@@ -222,9 +223,8 @@ if __name__ == "__main__":
     train_data, leftover_data = data.split(config.train.train_frac)
     print(f"{len(train_data)} training events ({train_data.n_label(0)} bkg, {train_data.n_label(1)} sig)")
     test_data, val_data = leftover_data.split(config.train.test_frac/(1 - config.train.train_frac))
-    print(f"{len(test_data)} training events ({test_data.n_label(0)} bkg, {test_data.n_label(1)} sig)")
-    print(f"{len(val_data)} training events ({val_data.n_label(0)} bkg, {val_data.n_label(1)} sig)")
-    val_data, throw_data=val_data.split(0.1)
+    print(f"{len(test_data)} testing events ({test_data.n_label(0)} bkg, {test_data.n_label(1)} sig)")
+    print(f"{len(val_data)} validation events ({val_data.n_label(0)} bkg, {val_data.n_label(1)} sig)")
 
     # Save datasets
     train_data.save(get_outfile(config, tag="train_dataset", msg="Wrote {}"))
@@ -255,9 +255,7 @@ if __name__ == "__main__":
         output["test_loss"].append(test_loss)
         output["test_acc"].append(test_acc)
 
-    history_json = get_outfile(config, epoch=epoch, tag="history").replace(".pt", ".json")
-    with open(history_json, "w") as f_out:
+    with open(get_outfile(config, tag="history", ext="json", msg="Wrote {}"), "w") as f_out:
         json.dump(output, f_out)
-    print(f"Wrote {history_json}")
 
     print(output)

@@ -7,7 +7,7 @@
         "hidden_size": 128
     },
     "ingress": {
-        "input_dir": "/home/users/joytzphysics/Analysis/abcdnet/test",
+        "input_dir": "/home/users/joytzphysics/Analysis/abcdnet/haddedOutputs",
         "ttree_name": "tree", 
         "features": [
             "hbb_pt",
@@ -49,7 +49,7 @@
         "weights": [
             "xsec_sf"
         ],
-        "disco_target": "x0"
+        "disco_target": "detajj"
     },
     "train": {
         "train_frac": 0.7,
@@ -65,6 +65,6 @@
             "step_size": 25,
             "gamma": 0.7
         },
-        "disco_lambda": 1000
+        "disco_lambda": 2000
     }
 }

@@ -2,8 +2,8 @@ import ROOT
 import numpy as np
 
 # Number of events to generate for signal and background
-# n_events = 2500000
-n_events = 25000
+n_events = 2500000
+# n_events = 25000
 
 # Define the mean and covariance matrices for the 3D gaussian
 mean_bkg = np.array([0, 0, 0])
