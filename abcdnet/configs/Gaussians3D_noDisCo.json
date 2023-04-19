@@ -8,19 +8,19 @@
     },
     "ingress": {
         "input_dir": "/home/users/joytzphysics/Analysis/abcdnet/Gaussian",
-        "signal_file": "sig.root",
+        "signal_file": "multigaussian_3d_sig.root",
         "ttree_name": "tree", 
-        "features": ["X1", "X2"],
+        "features": ["x1", "x2"],
         "transforms": {},
-        "disco_target": "X0"
+        "disco_target": "x0"
     },
     "train": {
         "train_frac": 0.68,
         "test_frac": 0.12,
         "val_frac": 0.2,
-        "train_batch_size": 34000,
-        "test_batch_size": 6000,
-        "val_batch_size": 10000,
+        "train_batch_size": 200,
+        "test_batch_size": 200,
+        "val_batch_size": 200,
         "learning_rate": 0.001,
         "seed": 1234,
         "scheduler_name": "StepLR",

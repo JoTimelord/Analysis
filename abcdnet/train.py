@@ -216,7 +216,7 @@ if __name__ == "__main__":
         DisCoDataset.get_name(config, "*"), 
         is_single_disco=(config.ingress.get("disco_target", None) != None)
     )
-    data.plot(config)
+    # data.plot(config)
     print(f"{len(data)} ({data.n_label(0)} bkg, {data.n_label(1)} sig) total:")
 
     # Split into test, train, and validation
