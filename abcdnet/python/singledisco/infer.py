@@ -21,10 +21,10 @@ class OutputCSV(VBSOutput):
     def __init__(self, file_name):
         super().__init__(file_name)
         self.__f = open(file_name, "w")
-        self.__f.write("idx,truth,score,weight\n")
+        self.__f.write("idx,truth,score,target,weight\n")
 
-    def write(self, idx, truth, score, weight):
-        self.__f.write(f"{idx},{int(truth)},{float(score)},{float(weight)}\n")
+    def write(self, idx, truth, score, target, weight):
+        self.__f.write(f"{idx},{int(truth)},{float(score)},{float(target)},{float(weight)}\n")
 
     def close(self):
         self.__f.close()
@@ -67,8 +67,8 @@ def infer(model, device, loader, output):
         end = time.time()
         times.append(end - start)
 
-        for truth, score, weight in zip(labels, inferences, weights):
-            output.write(event_i, truth, score, weight)
+        for truth, score, target, weight in zip(labels, inferences, disco_target, weights):
+            output.write(event_i, truth, score, target, weight)
 
     output.close()
     print(f"Wrote {output.file_name}")
