@@ -33,59 +33,38 @@ BKG_SAMPLE_MAP = {
     },
 }
 
-SIG_SAMPLE_MAP_2 = {
+SIG_SAMPLE_MAP = {
     "WZH": {
-        "20UL16APV*":["WZH*"],
-        "20UL16*":["WZH*"],
-        "20UL17*":["WZH*"],
-        "20UL18*":["WZH*"],
+        "20UL16APV*":["VBSWZH*"],
+        "20UL16-*":["VBSWZH*"],
+        "20UL17*":["VBSWZH*"],
+        "20UL18*":["VBSWZH*"],
     },
     "OSWWH": {
-        "20UL16APV*":["OSWWH*"],
-        "20UL16*":["OSWWH*"],
-        "20UL17*":["OSWWH*"],
-        "20UL18*":["OSWWH*"],
+        "20UL16APV*":["VBSOSWWH*"],
+        "20UL16-*":["VBSOSWWH*"],
+        "20UL17*":["VBSOSWWH*"],
+        "20UL18*":["VBSOSWWH*"],
     },
     "ZZH": {
-        "20UL16APV*":["ZZH*"],
-        "20UL16*":["ZZH*"],
-        "20UL17*":["ZZH*"],
-        "20UL18*":["ZZH*"],
+        "20UL16APV*":["VBSZZH*"],
+        "20UL16-*":["VBSZZH*"],
+        "20UL17*":["VBSZZH*"],
+        "20UL18*":["VBSZZH*"],
     },
     "WWH": {
-        "20UL16APV*":["WWH*"],
-        "20UL16*":["WWH*"],
-        "20UL17*":["WWH*"],
-        "20UL18*":["WWH*"],
+        "20UL16APV*":["VBSWWH*"],
+        "20UL16-*":["VBSWWH*"],
+        "20UL17*":["VBSWWH*"],
+        "20UL18*":["VBSWWH*"],
     },
-}
-
-SIG_SAMPLE_MAP_1 = {
-    "OSWWH_C2V_3": {
-        "20UL16APV*": ["VBSOSWWH_incl_C2V_3*"],
-        "20UL16*": ["VBSOSWWH_incl_C2V_3*"],
-        "20UL17*": ["VBSOSWWH_incl_C2V_3*"],
-        "20UL18*": ["VBSOSWWH_incl_C2V_3*"],
-    },
-    "WZH_C2V_3": {
-        "20UL16APV*": ["VBSWZH_incl_C2V_3*"],
-        "20UL16*": ["VBSWZH_incl_C2V_3*"],
-        "20UL17*": ["VBSWZH_incl_C2V_3*"],
-        "20UL18*": ["VBSWZH_incl_C2V_3*"],
-    },
-    "ZZH_C2V_3": {
-        "20UL16APV*": ["VBSZZH_incl_C2V_3*"],
-        "20UL16*": ["VBSZZH_incl_C2V_3*"],
-        "20UL17*": ["VBSZZH_incl_C2V_3*"],
-        "20UL18*": ["VBSZZH_incl_C2V_3*"],
-    }
 }
 
 def hadd_job(split_cmd):
     hadd = Popen(split_cmd, stdout=PIPE, stderr=PIPE)
     hadd.wait()
 
-def merge(output_dir, sample_map, n_hadders=8):
+def merge(output_dir, merge_dir, sample_map, n_hadders=8):
     # Collect cutflows and stage merge jobs
     hadd_cmds = []
     merged_cutflows = {}
@@ -106,12 +85,12 @@ def merge(output_dir, sample_map, n_hadders=8):
                     root_files_to_merge.append(root_file)
                     groups[year].append(root_file.split("/")[-1].replace(".root", ""))
         # Stage merge (hadd) jobs
-        output_file = f"{output_dir}/{group_name}.root"
-        hadd_cmds.append(["hadd", output_file] + root_files_to_merge)
-        if os.path.exists(output_file):
-            os.remove(output_file)
+        merge_file = f"{merge_dir}/{group_name}.root"
+        hadd_cmds.append(["hadd", merge_file] + root_files_to_merge)
+        if os.path.exists(merge_file):
+            os.remove(merge_file)
         # Write list of files that were hadded
-        with open(output_file.replace(".root", ".txt"), "w") as f_out:
+        with open(merge_file.replace(".root", ".txt"), "w") as f_out:
             for year, group in groups.items():
                 f_out.write("{0}:\n{1}\n\n".format(year, '\n'.join(sorted(group))))
 
@@ -124,26 +103,43 @@ def merge(output_dir, sample_map, n_hadders=8):
     else:
         return None
 
-
+def mergeAll(merge_dir, training_dir, sample_map, is_signal=False):
+    # stage merge jobs
+    hadd_cmds = []
+    if (is_signal==True): merge_file=f"{training_dir}/signal.root"
+    else: merge_file=f"{training_dir}/bkg.root"
+    root_files_to_merge = []
+    for group_name, group_map in sample_map.items():
+        root_files = glob.glob(f"{merge_dir}/{group_name}.root")
+        root_files_to_merge.extend(root_files)
+    hadd_cmds.append(["hadd", merge_file] + root_files_to_merge)
+    if os.path.exists(merge_file):
+        os.remove(merge_file)
+    print("Merging files: ", root_files_to_merge)
+    with Pool(processes=1) as pool:
+        list(tqdm(pool.imap(hadd_job, hadd_cmds), total=len(hadd_cmds), desc="Executing hadds"))
 
 if __name__ == "__main__":
     # create hadded output directory
-    # output_dir="/home/users/joytzphysics/Analysis/outputs/output_semiMerge_2oslep_2ak4_1ak8"
-    # output_dir="/home/users/joytzphysics/Analysis/outputs/output_semiMerge_2oslep_2ak4_1ak8_v2"
-    # output_dir="/home/users/joytzphysics/Analysis/outputs/output_fullyMerge_1lep_1ak8_2ak4_v1"
     output_dir="/home/users/joytzphysics/Analysis/outputs/output_fullyMerge_2oslep_2ak4_1ak8_v2"
-    os.makedirs(output_dir, exist_ok=True)
+    merge_dir="/home/users/joytzphysics/Analysis/outputs/hadded"
+    os.makedirs(merge_dir, exist_ok=True)
 
     # Get Cutflow objects for background samples
-    cutflows = merge(output_dir, BKG_SAMPLE_MAP)
+    cutflows = merge(output_dir, merge_dir, BKG_SAMPLE_MAP)
     cutflows["TotalBkg"] = cutflows.sum()
+
     # Get Cutflow objects for signal samples
-    # cutflows = merge(output_dir, SIG_SAMPLE_MAP_1)
-    cutflows_sig= merge(output_dir, SIG_SAMPLE_MAP_2)
+    cutflows_sig= merge(output_dir, merge_dir, SIG_SAMPLE_MAP)
     cutflows += cutflows_sig
     cutflows["TotalSig"] = cutflows_sig.sum()
     cutflows.reorder(["WWH","WZH","OSWWH", "ZZH", "TotalSig", "TotalBkg", "DYJets", "TTX", "Others"])
-    # cutflows.reorder(["WWDilep","WZHDilep","OSWWHDilep", "ZZHDilep","OSWWH_C2V_3", "WZH_C2V_3", "ZZH_C2V_3"])
+
+    # hadd files for training input (signal vs. bkg)
+    train_input_dir="/home/users/joytzphysics/Analysis/outputs/trainingInputs"
+    os.makedirs(train_input_dir, exist_ok=True)
+    mergeAll(merge_dir,train_input_dir,BKG_SAMPLE_MAP)
+    mergeAll(merge_dir,train_input_dir,SIG_SAMPLE_MAP,True)
 
     # Write .cflow files
     for group_name, cutflow in cutflows.items():

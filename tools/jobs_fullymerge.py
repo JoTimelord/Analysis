@@ -2,7 +2,7 @@ import os
 import json
 import glob
 import uproot
-from scale1fb import sumGenWeights, nevents
+from Analysis.tools.countEvents import sumGenWeights, nevents
 
 # output jobs file name
 output_name='/home/users/joytzphysics/Analysis/jobs/.jobs_fullyMerge_v2.txt'
