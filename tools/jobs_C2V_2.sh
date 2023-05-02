@@ -46,26 +46,6 @@ for i in {0,1,2}; do
         echo $BKGPROCESS
         # the following command can also deal with special characters such as dash
         XSECTION=$( jq --arg keyvar "$BKGPROCESS" '.[$keyvar]' /home/users/joytzphysics/Analysis/data/xsections.json )
-        # if [[ ${BKGPROCESS} == *"DYJETSbkg" ]]
-        # then
-        #     XSECTION=6197900
-        #     KEY="DYJetsToLL_M-50"
-        # fi
-        # if [[ ${BKGPROCESS} == *"WWinclusive" ]]
-        # then
-        #     XSECTION=118710
-        #     KEY="WW_TuneCP5"
-        # fi
-        # if [[ ${BKGPROCESS} == *"WWdilep" ]]
-        # then
-        #     XSECTION=12178
-        #     KEY="WWTo2L2Nu_TuneCP5"
-        # fi
-        # if [[ ${BKGPROCESS} == *"ttdilep" ]]
-        # then
-        #     XSECTION=72100
-        #     KEY="TTTo2L2Nu_TuneCP5"
-        # fi
         for YEAR in ${BKGYEARS}; do
             if [[ ${YEAR} == "20UL16NanoAODv9" ]]; then LUMINOSITY=16.81; fi
             if [[ ${YEAR} == "20UL16NanoAODAPVv9" ]]; then LUMINOSITY=19.52; fi
