@@ -3,8 +3,19 @@ import torch.nn as nn
 from sklearn.model_selection import train_test_split
 from torch.utils.data import Dataset, DataLoader
 import torch
-from sklearn.preprocessing import StandardScaler
+from sklearn.metrics import roc_curve,roc_auc_score
+import matplotlib.pyplot as plt
+import argparse
 
+parser = argparse.ArgumentParser(description='Take in options')
+parser.add_argument('--epoch', default=100, type=int,
+                    help='number of epochs to train')
+parser.add_argument('--batchsize', default=2000, type=int,
+                    help='number of samples per batch')
+parser.add_argument('--lr', default=0.001, type=float,
+                   help='learning rate')
+
+args = parser.parse_args()
 
 mean_sig = np.array([2.5, 2.5, 2])
 variance_sig = 1.5
@@ -24,14 +35,12 @@ covariance_bkg = np.array([
 ])*(variance_bkg**2)
 
 
-size=1000
+size=2000000
 sig=np.random.multivariate_normal(mean_sig,covariance_sig,size)
 bkg=np.random.multivariate_normal(mean_bkg,covariance_bkg,size)
 
 X=np.concatenate((sig[:,1:],bkg[:,1:]))
 Y=np.concatenate((np.ones(size),np.zeros(size)))
-sc = StandardScaler()
-X = sc.fit_transform(X)
 X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=0.15, random_state=42)
 
 class Data(Dataset):
@@ -46,7 +55,7 @@ class Data(Dataset):
     return self.len
   
 traindata = Data(X_train, Y_train)
-batch_size=10
+batch_size= args.batchsize
 trainloader = DataLoader(traindata, batch_size=batch_size, 
                          shuffle=True, num_workers=1)
 input_size=2
@@ -62,12 +71,13 @@ model = nn.Sequential(nn.Linear(input_size, hidden_sizes), # 1st hidden
                       nn.Sigmoid()
                      )
 
-learning_rate = 0.01
-epochs = 100
+learning_rate = args.lr
+epochs = args.epoch
 optimizer = torch.optim.Adam(model.parameters(),lr=learning_rate)
 loss_fn = nn.BCELoss()
 
 model.train()
+loss_history=np.zeros(epochs)
 for i in range(1,epochs+1):
     epoch_loss = 0
     for j,(x_train,y_train) in enumerate(trainloader):
@@ -85,3 +95,45 @@ for i in range(1,epochs+1):
         epoch_loss += loss.item()
 
     if i%5==0 or i==1: print(f'Epoch {i+0:03}: | Loss: {epoch_loss/len(trainloader):.5f}')
+    loss_history[i-1]=epoch_loss/len(trainloader)
+
+plt.figure()
+plt.plot(loss_history)
+plt.title("loss history")
+plt.xlabel("epoch")
+plt.ylabel("loss")
+plt.savefig('classifierHist.png')
+
+X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=0.9, random_state=42)
+testdata = Data(X_test, Y_test)
+batch_size=len(Y_test)
+testloader = DataLoader(testdata, batch_size=batch_size, 
+                         shuffle=True, num_workers=1)
+y_pred_list = []
+y_true_list = []
+model.eval()
+with torch.no_grad():
+    for X_batch, Y_batch in testloader:
+        y_test_pred = model(X_batch)
+        y_pred_list.append(y_test_pred.cpu().numpy())
+        y_true_list.append(Y_batch.cpu().numpy())
+
+y_pred_list = [a.squeeze().tolist() for a in y_pred_list]
+y_true_list = [a.squeeze().tolist() for a in y_true_list]
+
+truth_arr=np.asarray(y_true_list[0])
+pred_arr=np.asarray(y_pred_list[0])
+fpr, tpr, thresholds = roc_curve(truth_arr, pred_arr)
+auc = roc_auc_score(truth_arr, pred_arr)
+
+plt.figure()
+plt.plot(fpr,tpr,label="AUC="+str(auc))
+plt.ylabel('True Positive Rate')
+plt.xlabel('False Positive Rate')
+plt.legend(loc=4)
+plt.title("ROC curve")
+plt.savefig('classifierROC.png')
+
+bkg_y_pred=y_pred_list[y_true_list==0]
+
+
