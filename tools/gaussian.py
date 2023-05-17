@@ -21,14 +21,14 @@ def write_gaussian3D(n_events, mean, covariance, outfile):
 if __name__ == "__main__":
 
     n_events = 2000000
-    outdir = "/blue/p.chang/zhouy2/data/gaussians"
+    outdir = "/blue/p.chang/zhouy2/data/gaussians_2"
     os.makedirs(outdir, exist_ok=True)
 
     mean_bkg = np.array([0, 0, 0])
     variance_bkg = 1.5
     covariance_bkg = np.array([
-        [1, -0.8, 0],
-        [-0.8, 1, 0],
+        [1, 0.8, 0],
+        [0.8, 1, 0],
         [0, 0, 1]
     ])*(variance_bkg**2)
     write_gaussian3D(n_events, mean_bkg, covariance_bkg, f"{outdir}/bkg.root")
