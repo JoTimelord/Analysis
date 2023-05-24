@@ -3,7 +3,7 @@ import os, sys
 import argparse
 import uproot
 
-def sumGenWeights(dirname, tree_name, weight_name):
+def sumGenWeights(dirname, tree_name="Runs", weight_name="genEventSumw"):
     nevents = 0
     if os.path.isfile(dirname):
         if dirname.endswith(".root"):
@@ -52,8 +52,8 @@ if __name__ == "__main__":
 # Adding optional argument
     parser.add_argument("-f", "--file", help = "Enter directory/path name")
     parser.add_argument("-c", "--choice", help = "Raw event (R), Weighted event (W)")
-    parser.add_argument("-t", "--tree", help="Tree name")
-    parser.add_argument("-w", "--weight", help="Enter the name of branch that saves weight")
+    parser.add_argument("-t", "--tree", default="Runs", help="Tree name")
+    parser.add_argument("-w", "--weight", default="genEventSumw", help="Enter the name of branch that saves weight")
 
 # Read arguments from command line
     args = parser.parse_args()

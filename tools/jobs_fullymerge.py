@@ -2,7 +2,7 @@ import os
 import json
 import glob
 import uproot
-from Analysis.tools.countEvents import sumGenWeights, nevents
+from countEvents import sumGenWeights, nevents
 
 # output jobs file name
 output_name='/home/users/joytzphysics/Analysis/jobs/.jobs_fullyMerge_v2.txt'
@@ -41,7 +41,7 @@ with open(output_name,'w') as f:
             bkg_file_lists=glob.glob(f"{bkg_mc_dir}/{key}*{yr}*")
             for file in bkg_file_lists:
                 print(f"dealing with {file}")
-                raw_events+=nevents(file)
+                raw_events+=nevents(file, "Events")
                 summed_wgt+=sumGenWeights(file)
             if len(bkg_file_lists)==0: 
                 print(f"Process with year {yr} and key {key} cannot be found.")
@@ -59,12 +59,12 @@ with open(output_name,'w') as f:
             sig_file_lists=glob.glob(f"{sig_mc_dir}/{key}*{yr}*")
             for file in sig_file_lists:
                 print(f"dealing with {file}")
-                raw_events+=nevents(file)
+                raw_events+=nevents(file, "Events")
                 summed_wgt+=sumGenWeights(file)
             if len(sig_file_lists)==0: 
                 print(f"Process with year {yr} and key {key} cannot be found.")
                 continue
-            scale1fb=xsec*lumi*1000/summed_wgt
+            scale1fb=xsec*lumi/summed_wgt
             i=0
             for filepath in glob.iglob(f"{sig_mc_dir}/{key}*{yr}*"+"**/*.root", recursive=True):
                 f.write(f"./fullyMerge -t Events -d outputs/output_fullyMerge_2oslep_2ak4_1ak8_v2 -s {scale1fb} -n {key}_{yr}_{i} -T tree {filepath}\n")
