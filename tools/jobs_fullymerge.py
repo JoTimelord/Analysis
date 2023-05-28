@@ -5,7 +5,7 @@ import uproot
 from countEvents import sumGenWeights, nevents
 
 # output jobs file name
-output_name='/home/users/joytzphysics/Analysis/jobs/.jobs_fullyMerge_v2.txt'
+output_name='/home/users/joytzphysics/Analysis/jobs/.jobs_2FJ_sig_only.txt'
 
 # input MC sample directories
 bkg_mc_dir='/ceph/cms/store/user/jguiang/VBSVHSkim/bkg_2oslep_2ak4_1ak8_v2'
@@ -48,9 +48,15 @@ with open(output_name,'w') as f:
                 continue
             scale1fb=xsec*lumi*1000/summed_wgt
             i=0
-            for filepath in glob.iglob(f"{bkg_mc_dir}/{key}*{yr}*"+"**/*.root", recursive=True):
-                f.write(f"./fullyMerge -t Events -d outputs/output_fullyMerge_2oslep_2ak4_1ak8_v2 -s {scale1fb} -n {key}_{yr}_{i} -T tree {filepath}\n")
-                i+=1
+            dir_list=glob.glob(f"{bkg_mc_dir}/{key}*{yr}*")
+            for dir in dir_list:
+                print(f"Processing {dir}.")
+                for root, subdirs, files in os.walk(dir):
+                    for file in files:
+                        if file.endswith(".root"):
+                            file_path=os.path.join(root,file)
+                            f.write(f"./fullyMerge -t Events -d outputs/raw_outputs -s {scale1fb} -n {key}_{yr}_{i} -T tree {file_path}\n")
+                            i+=1
     for key,xsec in sig_keys.items():
         print(f"dealing with {key}")
         for yr, lumi in sig_years.items():
@@ -66,6 +72,11 @@ with open(output_name,'w') as f:
                 continue
             scale1fb=xsec*lumi/summed_wgt
             i=0
-            for filepath in glob.iglob(f"{sig_mc_dir}/{key}*{yr}*"+"**/*.root", recursive=True):
-                f.write(f"./fullyMerge -t Events -d outputs/output_fullyMerge_2oslep_2ak4_1ak8_v2 -s {scale1fb} -n {key}_{yr}_{i} -T tree {filepath}\n")
-                i+=1
+            dir_list=glob.glob(f"{sig_mc_dir}/{key}*{yr}*")
+            for dir in dir_list:
+                for root, subdirs, files in os.walk(dir):
+                    for file in files:
+                        if file.endswith(".root"):
+                            file_path=os.path.join(root,file)
+                            f.write(f"./fullyMerge -t Events -d outputs/sig_c2v3 -s {scale1fb} -n {key}_{yr}_{i} -T tree {file_path} --is_signal \n")
+                            i+=1

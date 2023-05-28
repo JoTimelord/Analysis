@@ -121,16 +121,17 @@ def mergeAll(merge_dir, training_dir, sample_map, is_signal=False):
 
 if __name__ == "__main__":
     # create hadded output directory
-    output_dir="/home/users/joytzphysics/Analysis/outputs/output_fullyMerge_2oslep_2ak4_1ak8_v2"
+    bkg_output_dir="/home/users/joytzphysics/Analysis/outputs/raw_outputs"
+    sig_output_dir="/home/users/joytzphysics/Analysis/outputs/raw_outputs"
     merge_dir="/home/users/joytzphysics/Analysis/outputs/hadded"
     os.makedirs(merge_dir, exist_ok=True)
 
     # Get Cutflow objects for background samples
-    cutflows = merge(output_dir, merge_dir, BKG_SAMPLE_MAP)
+    cutflows = merge(bkg_output_dir, merge_dir, BKG_SAMPLE_MAP)
     cutflows["TotalBkg"] = cutflows.sum()
 
     # Get Cutflow objects for signal samples
-    cutflows_sig= merge(output_dir, merge_dir, SIG_SAMPLE_MAP)
+    cutflows_sig= merge(sig_output_dir, merge_dir, SIG_SAMPLE_MAP)
     cutflows += cutflows_sig
     cutflows["TotalSig"] = cutflows_sig.sum()
     cutflows.reorder(["WWH","WZH","OSWWH", "ZZH", "TotalSig", "TotalBkg", "DYJets", "TTX", "Others"])
@@ -138,15 +139,14 @@ if __name__ == "__main__":
     # hadd files for training input (signal vs. bkg)
     train_input_dir="/home/users/joytzphysics/Analysis/outputs/trainingInputs"
     os.makedirs(train_input_dir, exist_ok=True)
-    mergeAll(merge_dir,train_input_dir,BKG_SAMPLE_MAP)
     mergeAll(merge_dir,train_input_dir,SIG_SAMPLE_MAP,True)
 
     # Write .cflow files
     for group_name, cutflow in cutflows.items():
-        cutflow.write_cflow(f"{output_dir}/{group_name}_cutflow.cflow")
+        cutflow.write_cflow(f"{merge_dir}/{group_name}_cutflow.cflow")
     
     # Write to CSV files
     for terminal_cut_name in cutflows.terminal_cut_names:
-        cutflows.write_csv(f"{output_dir}/cutflow_{terminal_cut_name}.csv", terminal_cut_name)
-        cutflows.write_txt(f"{output_dir}/cutflow_{terminal_cut_name}.txt", terminal_cut_name)
-        cutflows.write_tex(f"{output_dir}/cutflow_{terminal_cut_name}.tex", terminal_cut_name)
+        cutflows.write_csv(f"{merge_dir}/cutflow_{terminal_cut_name}.csv", terminal_cut_name)
+        cutflows.write_txt(f"{merge_dir}/cutflow_{terminal_cut_name}.txt", terminal_cut_name)
+        cutflows.write_tex(f"{merge_dir}/cutflow_{terminal_cut_name}.tex", terminal_cut_name)

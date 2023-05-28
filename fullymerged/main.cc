@@ -27,8 +27,15 @@ int main(int argc, char** argv)
         {
             /* Cut logic */
             arbol.setLeaf<int>("event", nt.event());
-            arbol.setLeaf<double>("xsec_sf", cli.scale_factor*nt.genWeight());
             arbol.setLeaf<double>("scale_fac", cli.scale_factor);
+            arbol.setLeaf<double>("gen_wgt", nt.genWeight());
+            arbol.setLeaf<double>("xsec_sf", cli.scale_factor*nt.genWeight());
+            if (cli.is_signal && nt.nLHEReweightingWeight() > 0)
+            {
+                arbol.setLeaf<double>("reweight_c2v_eq_3", nt.LHEReweightingWeight().at(31));
+                arbol.setLeaf<double>("reweight_c2v_eq_4", nt.LHEReweightingWeight().at(35));
+                arbol.setLeaf<double>("gen_wgt",1.0);
+            }
             return true;
         },
         [&]()
@@ -46,22 +53,6 @@ int main(int argc, char** argv)
     cutflow.insert(base, lhe_vars, Right);
 
 
-    // Save C2V=4 weights
-    Cut* save_reweights = new LambdaCut(
-        "SaveReweights",
-        [&]()
-        {
-            if (cli.is_signal && nt.nLHEReweightingWeight() > 0)
-            {
-                arbol.setLeaf<double>("reweight_c2v_eq_3", nt.LHEReweightingWeight().at(31));
-                arbol.setLeaf<double>("reweight_c2v_eq_4", nt.LHEReweightingWeight().at(35));
-            }
-            return true;
-        }
-    );
-    cutflow.insert(lhe_vars, save_reweights, Right);
-
-
     // =========================================================================================
     // OBJECT SELECTION
     // Electron/Muon selection
@@ -72,7 +63,7 @@ int main(int argc, char** argv)
             return eq2OSLeptonsPtGt30(nt, arbol, cutflow);
         }
     );
-    cutflow.insert(save_reweights, lep_sel, Right);
+    cutflow.insert(lhe_vars, lep_sel, Right);
 
     // Fatjet Selection
     Cut* ak8_sel = new LambdaCut(
