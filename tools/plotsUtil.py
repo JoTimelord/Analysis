@@ -5,9 +5,13 @@ import numpy as np
 import yahist
 from yahist import Hist1D
 import mplhep as hep
+<<<<<<< HEAD
 import itertools as it
 from tqdm import tqdm
 import os
+=======
+
+>>>>>>> b31f42bdf1cf67e26719f90bb4bb525acf703187
 
 # calculate a dataframe that stores the background and signal in A+B versus C+D region
 # and a dataframe for closure in background only (for decorrelation purpose)
@@ -106,18 +110,30 @@ def bruteCond(sel_dict, bins=20):
     return wk_pts
 
 # apply scans on various cuts to select signal region A
+<<<<<<< HEAD
 def bruteScan(data_df, sel_dict, save_name, bins=20, weight_name='xsec_sf', truth_name='is_signal'):
     sig_df=data_df[data_df[truth_name]==1]
     bkg_df=data_df[data_df[truth_name]==0]
     sig_tot=sig_df[weight_name].sum()
     scan_df=pd.DataFrame(columns=['Cuts', 'A', 'SIG(A)', 'SIG(A)/SQRT(BKG(A))', 'SIG(A)/SIG(TOT)', 'BKG(A)'])
+=======
+def bruteScan(data_df, sel_dict, bins=20, weight_name='xsec_sf', truth_name='is_signal'):
+    sig_df=data_df[data_df[truth_name]==1]
+    bkg_df=data_df[data_df[truth_name]==0]
+    sig_tot=sig_df[weight_name].sum()
+    scan_df=pd.DataFrame(columns=['Cuts', 'A', 'SIG(A)', 'SIG(A)/SQRT(BKG(A))', 'SIG(A)/SIG(TOT)'])
+>>>>>>> b31f42bdf1cf67e26719f90bb4bb525acf703187
     name_list=sel_dict['name']
     cuts_list=sel_dict['range']
     # make working points
     wk_cuts_list=[]
     for i, name in enumerate(name_list):
         cut=cuts_list[i]
+<<<<<<< HEAD
         cut_list=np.round(np.linspace(*cut, bins), decimals=2).tolist()
+=======
+        cut_list=np.linspace(*cut, bins).tolist()
+>>>>>>> b31f42bdf1cf67e26719f90bb4bb525acf703187
         wk_cuts_list.append(cut_list)
     wk_pts=list(it.product(*wk_cuts_list))
     # get selection string for each working point
@@ -130,6 +146,7 @@ def bruteScan(data_df, sel_dict, save_name, bins=20, weight_name='xsec_sf', trut
         # evaluate
         bkg_A=bkg_df[bkg_df.eval(string)][weight_name].sum()
         sig_A=sig_df[sig_df.eval(string)][weight_name].sum()
+<<<<<<< HEAD
         scan_df.loc[i]=[string, bkg_A+sig_A, sig_A, sig_A/np.sqrt(bkg_A), sig_A/sig_tot, bkg_A]
     sorted_scan=scan_df.sort_values(by=['SIG(A)/SQRT(BKG(A))'], ascending=False,ignore_index=True)
     sorted_scan.to_csv(os.path.join(save_name))
@@ -137,6 +154,13 @@ def bruteScan(data_df, sel_dict, save_name, bins=20, weight_name='xsec_sf', trut
 
 # plot Histogram of inferred score of signal versus background
 def getInferScoreHist(infer_name, data_frame, truth_name, weight_name, bins_no, x_range, signal_scale, save_fig, dir_name):
+=======
+        scan_df.loc[i]=[string, bkg_A+sig_A, sig_A, sig_A/np.sqrt(bkg_A), sig_A/sig_tot]
+    return scan_df.sort_values(by=['SIG(A)/SQRT(BKG(A))'], ascending=False,ignore_index=True)
+
+# plot Histogram of inferred score of signal versus background
+def getInferScoreHist(infer_name, data_frame, truth_name, weight_name, bins_no, x_range, signal_scale):
+>>>>>>> b31f42bdf1cf67e26719f90bb4bb525acf703187
     bins_edges=np.linspace(*x_range, bins_no)
     bkg_df=data_frame[data_frame[truth_name]==0]
     sig_df=data_frame[data_frame[truth_name]==1]
@@ -152,17 +176,25 @@ def getInferScoreHist(infer_name, data_frame, truth_name, weight_name, bins_no, 
     axes.set_ylabel("count")
     bkg_hist.plot(ax=axes,alpha=1)
     sig_hist.plot(ax=axes,alpha=1)
+<<<<<<< HEAD
     if save_fig==True: plt.savefig(f'{dir_name}/NN_hist.png')
     
 
 # plot training history stored as dictionary
 def plotHistory(history, save_fig, save_dir, epoch_step=5):
+=======
+    
+
+# plot training history stored as dictionary
+def plotHistory(history):
+>>>>>>> b31f42bdf1cf67e26719f90bb4bb525acf703187
     train_loss = history['train_loss']
     train_bce = history['train_bce']
     train_disco = history['train_disco']
     test_disco = history['test_disco']
     test_loss = history['test_loss']
     test_bce = history['test_bce']
+<<<<<<< HEAD
     
     xaxis=np.arange(0,len(train_loss))
     
@@ -218,3 +250,54 @@ def plotDisCoWithCuts(ABCD_cuts, NN_score, DisCo_name, df, truth_name, weight_na
     
     if save_fig==True: plt.savefig(f'{dir_name}/NNDisCo_hist_{nameindex}.png')
     
+=======
+
+    
+
+    fig, axes=plt.subplots()
+
+    axes.plot(train_loss, alpha=0.8, linewidth=3, label='training loss')
+    axes.plot(train_disco, alpha=0.8, linewidth=3, label='disco loss')
+    axes.plot(train_bce, alpha=0.8, linewidth=3, label='bce loss')
+    axes.plot()
+    axes.legend()
+    axes.set_title('Training Loss')
+
+    fig, axes=plt.subplots()
+
+    axes.plot(test_loss, alpha=0.8, linewidth=3, label='testing loss')
+    axes.plot(test_disco, alpha=0.8, linewidth=3, label='disco loss')
+    axes.plot(test_bce, alpha=0.8, linewidth=3, label='bce loss')
+    axes.plot()
+    axes.legend()
+    axes.set_title('Testing Loss')
+
+    fig, axes=plt.subplots()
+    axes.plot(test_loss, linewidth=3, label='test loss')
+    axes.plot(train_loss, linewidth=3, label='train loss')
+    axes.legend()
+    axes.set_title("Loss")
+    
+# plot distribution in DisCo Target for a certain ABCD cut
+def plotDisCoWithCuts(ABCD_cut, NN_score, DisCo_name, df, truth_name, weight_name, x_range, bins_no):
+    bins_edges=np.linspace(*x_range, bins_no)
+    
+    # make cut on ABCD score
+    data_frame=df[df[NN_score]>=ABCD_cut]
+    
+    bkg_df=data_frame[data_frame[truth_name]==0]
+    sig_df=data_frame[data_frame[truth_name]==1]
+    total_bkg_wgt=round(np.sum(bkg_df[weight_name]))
+    total_sig_wgt=round(np.sum(sig_df[weight_name]))/1000
+    
+    df_list=[bkg_df[DisCo_name],sig_df[DisCo_name]]
+    weight_list=[bkg_df[weight_name],sig_df[weight_name]/100]
+    label_list=[fr'bkg({total_bkg_wgt})', fr'sig$\times$10({total_sig_wgt})']
+    
+    fig, axes=plt.subplots()
+    hep.cms.label("Preliminary", data=True, lumi=138, loc=0, ax=axes)
+    plt.hist(df_list, stacked=True, alpha=0.6, bins=bins_no, label=label_list, weights=weight_list)
+    axes.legend()
+    axes.set_xlabel(r"$\Delta \eta_{jj}$")
+    axes.set_ylabel("count")
+>>>>>>> b31f42bdf1cf67e26719f90bb4bb525acf703187
